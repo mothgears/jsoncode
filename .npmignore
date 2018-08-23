@@ -1,0 +1,6 @@
+.idea
+.gitignore
+.npmignore
+./tests/
+yarn-error.log
+yarn.lock

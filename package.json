@@ -1,0 +1,44 @@
+{
+  "name": "jsoncode",
+  "version": "1.0.0",
+  "description": "JSON with conditional statements",
+  "author": "Artem Varshavin",
+  "license": "MIT",
+  "keywords": [
+    "json",
+    "conditional statements",
+    "logical tree",
+    "switch",
+    "if"
+  ],
+  "main": "jsoncode.js",
+  "scripts": {
+    "test": "jest",
+    "mini": "browserify jsoncode.js -t [ babelify --presets [ env ] ] -g [ uglifyify ] > jsoncode.min.js",
+    "mini-map": "browserify jsoncode.js -d -t [ babelify --presets [ env ] ] -g [ uglifyify ] | exorcist jsoncode.min.js.map > jsoncode.min.js"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mothgears/jsoncode.git"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babelify": "^8.0.0",
+    "browserify": "^14.5.0",
+    "exorcist": "^1.0.0",
+    "jest": "^21.2.1",
+    "uglifyify": "^4.0.5"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "testMatch": [
+      "**/tests/**/*.(js?(x))",
+      "**/?(*.)(spec|test).(js?(x))"
+    ]
+  }
+}

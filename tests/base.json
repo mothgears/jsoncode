@@ -1,0 +1,134 @@
+{
+  "TEST 1" : {
+    "item1 [IF boolTrue]"   : "1a",
+    "item2 [IF !boolTrue]"  : "1b",
+    "item3 [IF boolFalse]"  : "2a",
+    "item4 [IF !boolFalse]" : "2b",
+    "item5 [IF undef]"  : "3a",
+    "item6 [IF !undef]" : "3b"
+  },
+
+  "TEST 1B" : {
+    "item7 [IF stringAlpha = 'alpha']" : "4a",
+    "item8 [IF stringAlpha = 'beta']"  : "4b",
+    "item7b [IF stringAlpha 'alpha']"  : "4aa",
+    "item8b [IF stringAlpha 'beta']"   : "4bb"
+  },
+
+  "TEST 1C" : {
+    "item9 [IF int10 = 9]"   : "5a",
+    "item10 [IF int10 = 10]" : "5b",
+    "item11 [IF int10 = 11]" : "5c",
+    "item9b [IF int10 9]"    : "5aa",
+    "item10b [IF int10 10]"  : "5bb",
+    "item11b [IF int10 11]"  : "5cc",
+
+    "item12 [IF int10 > 9]"  : "6a",
+    "item13 [IF int10 > 10]" : "6b",
+    "item14 [IF int10 > 11]" : "6c",
+
+    "item15 [IF int10 < 9]"  : "7a",
+    "item16 [IF int10 < 10]" : "7b",
+    "item17 [IF int10 < 11]" : "7c",
+
+    "item18 [IF int10 >= 9]"  : "8a",
+    "item19 [IF int10 >= 10]" : "8b",
+    "item20 [IF int10 >= 11]" : "8c",
+
+    "item21 [IF int10 <= 9]"  : "9a",
+    "item22 [IF int10 <= 10]" : "9b",
+    "item23 [IF int10 <= 11]" : "9c"
+  },
+
+
+  "TEST 2" : {
+    "item1 [BY boolTrue]" : {
+      "#TRUE"  : "1a",
+      "#FALSE" : "1b"
+    },
+    "item2 [BY boolFalse]" : {
+      "#TRUE"  : "2a",
+      "#FALSE" : "2b"
+    },
+    "item3 [BY undef]" : {
+      "#TRUE"    : "3a",
+      "#FALSE"   : "3b",
+      "#DEFAULT" : "3c"
+    },
+    "item4 [BY boolFalse]" : {
+      "#TRUE"    : "4a",
+      "#DEFAULT" : "4b"
+    }
+  },
+
+  "TEST 3" : {
+    "item1 [BY stringAlpha]" : {
+      "alpha" : "1a",
+      "beta"  : "1b",
+      "gamma" : "1c"
+    },
+    "item2 [BY stringBeta]" : {
+      "alpha" : "2a",
+      "beta"  : "2b",
+      "gamma" : "2c"
+    },
+    "item3 [BY stringAlpha]" : {
+      "beta"  : "2b",
+      "gamma" : "2c"
+    }
+  },
+
+  "TEST 4" : {
+    "item1 [BY stringAlpha]" : {
+      "alpha" : {
+        "item11 [IF boolTrue]"  : "11a",
+        "item12 [IF boolFalse]" : "12a",
+        "item13"                : "13a"
+      },
+      "beta" : {
+        "item21 [IF boolTrue]"  : "21a",
+        "item22 [IF boolFalse]" : "22a",
+        "item23"                : "23a"
+      }
+    }
+  },
+
+  "TEST 5" : {
+    "item1 [BY stringAlpha, stringBeta]" : {
+      "alpha" : {
+        "alpha" : "1a",
+        "beta"  : "1b",
+        "gamma" : "1c"
+      },
+      "beta" : {
+        "alpha" : "2a",
+        "beta"  : "2b",
+        "gamma" : "2c"
+      },
+      "gamma" : {
+        "alpha" : "3a",
+        "beta"  : "3b",
+        "gamma" : "3c"
+      }
+    }
+  },
+
+  "TEST 6" : {
+    "item1 [IF boolTrue & boolFalse]"  : "1a",
+    "item2 [IF boolTrue | boolFalse]"  : "1b",
+    "item3 [IF boolTrue & boolTrue]"   : "2a",
+    "item4 [IF boolFalse & boolFalse]" : "2b",
+    "item5 [IF boolTrue | boolTrue]"   : "3a",
+    "item6 [IF boolFalse | boolFalse]" : "3b"
+  },
+
+  "TEST 7" : {
+    "item1 [IF stringAlpha = 'alpha' & boolTrue | stringBeta = 'gamma' & boolFalse]" : "1a",
+    "item2 [IF stringAlpha = 'alpha' & boolTrue & stringBeta = 'gamma' & boolFalse]" : "1b",
+    "item3 [IF stringAlpha = 'alpha' | boolTrue & stringBeta = 'gamma' & boolFalse]" : "1c",
+    "item4 [IF stringAlpha = 'alpha' & boolTrue & stringBeta = 'gamma' | boolFalse]" : "1d",
+    "item5 [IF stringAlpha = 'alpha' | boolTrue & stringBeta = 'gamma' | boolFalse]" : "1e",
+    "item6 [IF stringAlpha = 'alpha' & boolFalse | stringBeta = 'gamma' & boolTrue]" : "2a",
+    "item7 [IF stringAlpha = 'alpha' & boolFalse | stringBeta = 'gamma' | boolTrue]" : "2b"
+  }
+}
