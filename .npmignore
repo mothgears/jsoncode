@@ -1,6 +1,6 @@
 .idea
 .gitignore
 .npmignore
-./tests/
+tests/
 yarn-error.log
 yarn.lock
