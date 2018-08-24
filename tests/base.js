@@ -84,3 +84,18 @@ test('JSONCode: TEST 7', () => {
 		"item7":"2b"
 	});
 });
+
+test('JSONCode: TEST 8', () => {
+	expect(resultTree["TEST 8"]).toEqual({
+		"item1":["1a","1b","1c"]
+	});
+});
+
+test('JSONCode: TEST 9', () => {
+	expect(resultTree["TEST 9"]).toEqual({
+		"item1":[
+			{"item11":"1a"},
+			{"item22":"2b","item23":"3b"}
+		]
+	});
+});

@@ -1,6 +1,6 @@
 {
   "name": "jsoncode",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "JSON with conditional statements",
   "author": "Artem Varshavin",
   "license": "MIT",
@@ -14,8 +14,8 @@
   "main": "jsoncode.js",
   "scripts": {
     "test": "jest",
-    "mini": "browserify jsoncode.js -t [ babelify --presets [ env ] ] -g [ uglifyify ] > jsoncode.min.js",
-    "mini-map": "browserify jsoncode.js -d -t [ babelify --presets [ env ] ] -g [ uglifyify ] | exorcist jsoncode.min.js.map > jsoncode.min.js"
+    "pack": "browserify jsoncode.js -t [ babelify --presets [ env ] ] -g [ uglifyify ] > jsoncode.min.js",
+    "pack-map": "browserify jsoncode.js -d -t [ babelify --presets [ env ] ] -g [ uglifyify ] | exorcist jsoncode.min.js.map > jsoncode.min.js"
   },
   "repository": {
     "type": "git",

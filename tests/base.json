@@ -130,5 +130,27 @@
     "item5 [IF stringAlpha = 'alpha' | boolTrue & stringBeta = 'gamma' | boolFalse]" : "1e",
     "item6 [IF stringAlpha = 'alpha' & boolFalse | stringBeta = 'gamma' & boolTrue]" : "2a",
     "item7 [IF stringAlpha = 'alpha' & boolFalse | stringBeta = 'gamma' | boolTrue]" : "2b"
+  },
+
+  "TEST 8" : {
+    "item1 [IF boolTrue]"  : ["1a", "1b", "1c"],
+    "item2 [IF boolFalse]" : ["2a", "2b", "2c"]
+  },
+
+  "TEST 9" : {
+    "item1 [IF boolTrue]" : [
+      {
+        "item11 [IF boolTrue]"  : "1a",
+        "item12 [IF boolFalse]" : "1b"
+      }, {
+        "item21 [IF boolFalse]" : "2a",
+        "item22 [IF boolTrue]"  : "2b",
+        "item23 [BY stringBeta]" : {
+          "alpha": "3a",
+          "beta" : "3b",
+          "gamma": "3c"
+        }
+      }
+    ]
   }
 }

@@ -27,6 +27,12 @@ const condTypes = {
 const parseItem = (node, model) => {
 	if (typeof node !== 'object') return node;
 
+	if (Array.isArray(node)) {
+		const newArray = [];
+		node.forEach(item=>newArray.push(parseItem(item, model)));
+		return newArray;
+	}
+
 	const newNode = {};
 	const keys = Object.keys(node);
 	for (const key of keys) {
