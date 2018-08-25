@@ -6,7 +6,7 @@ JSON with conditional statements and switches
 ```json
 {
     "Animals": {
-        "cat [IF type = 'mammal' & carnival]": {
+        "cat [IF type = 'mammal' & carnivours]": {
             "size": "middle",
             "canFly": false,
             "worth [BY target]": {
@@ -15,7 +15,7 @@ JSON with conditional statements and switches
                 "buy": 70
             }
         },
-        "pony [IF type = 'mammal' & !carnival]": {
+        "pony [IF type = 'mammal' & !carnivours]": {
             "size": "big",
             "canFly": false,
             "worth [BY target]": {
@@ -24,7 +24,7 @@ JSON with conditional statements and switches
                 "buy": 1300
             }
         },
-        "beetle [IF type = 'insect' & carnival]": {
+        "beetle [IF type = 'insect' & carnivours]": {
             "size": "little",
             "canFly": true,
             "worth [BY target]": {
@@ -33,7 +33,7 @@ JSON with conditional statements and switches
                 "buy": 35
             }
         },
-        "dog [IF type = 'mammal' & carnival]": {
+        "dog [IF type = 'mammal' & carnivours]": {
             "size": "middle",
             "canFly": false,
             "worth [BY target]": {
@@ -45,7 +45,7 @@ JSON with conditional statements and switches
     },
     
     "Animals food": { 
-        "In stock [BY city, type, carnival]": {
+        "In stock [BY city, type, carnivours]": {
             "Washington" : {
                 "mammal" : {
                     "#TRUE": "100 kg",
@@ -78,7 +78,7 @@ JSON with conditional statements and switches
     
     const priceList = jsoncode(petShop['Animals'], {
         type: "mammal",
-        carnival: true,
+        carnivours: true,
         target: "sellOne"
     });
     
@@ -86,8 +86,18 @@ JSON with conditional statements and switches
     const animalsFood = JSON.specify(petShop['Animals food'], {
         city: "New York",
         type: "mammal",
-        carnival: true,
+        carnivours: true,
     });
     
-    console.log(priceList, animalsFood);
+    const animalTypes = Object.keys(priceList);
+    for (let animalType of animalTypes) console.log(animalType, priceList[animalType]);
+    
+    console.log('Animals food', animalsFood);
+```
+
+####Result:
+```
+    cat { size: 'middle', canFly: false, worth: 100 }
+    dog { size: 'middle', canFly: false, worth: 130 }
+    Animals food { 'In stock': '90 kg' }
 ```

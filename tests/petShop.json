@@ -1,6 +1,6 @@
 {
   "Animals": {
-    "cat [IF type = 'mammal' & carnival]": {
+    "cat [IF type = 'mammal' & carnivours]": {
       "size": "middle",
       "canFly": false,
       "worth [BY target]": {
@@ -9,7 +9,7 @@
         "buy": 70
       }
     },
-    "pony [IF type = 'mammal' & !carnival]": {
+    "pony [IF type = 'mammal' & !carnivours]": {
       "size": "big",
       "canFly": false,
       "worth [BY target]": {
@@ -18,7 +18,7 @@
         "buy": 1300
       }
     },
-    "beetle [IF type = 'insect' & carnival]": {
+    "beetle [IF type = 'insect' & carnivours]": {
       "size": "little",
       "canFly": true,
       "worth [BY target]": {
@@ -27,7 +27,7 @@
         "buy": 35
       }
     },
-    "dog [IF type = 'mammal' & carnival]": {
+    "dog [IF type = 'mammal' & carnivours]": {
       "size": "middle",
       "canFly": false,
       "worth [BY target]": {
@@ -39,7 +39,7 @@
   },
 
   "Animals food": {
-    "In stock [BY city, type, carnival]": {
+    "In stock [BY city, type, carnivours]": {
       "Washington" : {
         "mammal" : {
           "#TRUE": "100 kg",

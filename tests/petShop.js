@@ -4,7 +4,7 @@ const petShop = require('./petShop.json');
 test('JSONCode: Pet shop / price list', () => {
 	const priceList = JSON.specify(petShop['Animals'], {
 		type: "mammal",
-		carnival: true,
+		carnivours: true,
 		target: "sellOne"
 	});
 
@@ -26,7 +26,7 @@ test('JSONCode: Pet shop / animals food', () => {
 	const animalsFood = JSON.specify(petShop['Animals food'], {
 		city: "New York",
 		type: "mammal",
-		carnival: true,
+		carnivours: true,
 	});
 
 	expect(animalsFood).toEqual({
