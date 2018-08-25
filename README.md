@@ -73,31 +73,111 @@ JSON with conditional statements and switches
 
 "petShop.js"
 ```js
-    const jsoncode = require('jsoncode');
-    const petShop  = require('./petShop.json');
-    
-    const priceList = jsoncode(petShop['Animals'], {
-        type: "mammal",
-        carnivours: true,
-        target: "sellOne"
-    });
-    
-    //Alternate using by JSON
-    const animalsFood = JSON.specify(petShop['Animals food'], {
-        city: "New York",
-        type: "mammal",
-        carnivours: true,
-    });
-    
-    const animalTypes = Object.keys(priceList);
-    for (let animalType of animalTypes) console.log(animalType, priceList[animalType]);
-    
-    console.log('Animals food', animalsFood);
+const jsoncode = require('jsoncode');
+const petShop  = require('./petShop.json');
+ 
+const priceList = jsoncode(petShop['Animals'], {
+    type: "mammal",
+    carnivours: true,
+    target: "sellOne"
+});
+ 
+//Alternate using by JSON
+const animalsFood = JSON.specify(petShop['Animals food'], {
+    city: "New York",
+    type: "mammal",
+    carnivours: true,
+});
+ 
+//Output
+const animalTypes = Object.keys(priceList);
+for (let animalType of animalTypes) console.log(animalType, priceList[animalType]);
+ 
+console.log('Animals food', animalsFood);
 ```
 
-####Result:
+#### Result:
 ```
-    cat { size: 'middle', canFly: false, worth: 100 }
-    dog { size: 'middle', canFly: false, worth: 130 }
-    Animals food { 'In stock': '90 kg' }
+cat { size: 'middle', canFly: false, worth: 100 }
+dog { size: 'middle', canFly: false, worth: 130 }
+Animals food { 'In stock': '90 kg' }
+```
+
+## Manual
+#### Existence operator "IF"
+If condition is false, item removes from tree
+```js
+const myJsonObject = {
+    "Element 1 [IF myVariable > 0]" : "some content 1", 
+    "Element 2 [IF myVariable > 5]" : "some content 2", 
+    "Element 3 [IF myVariable > 10]" : "some content 3" 
+};
+ 
+console.log(jsoncode(myJsonObject, {myVariable: 7}));
+ 
+//{"Element 1": "some content 1", "Element 2": "some content 2"}
+```
+
+#### Switch operator "BY"
+It selects value of node by user selector
+```js
+const myJsonObject = {
+    "Selected value [BY mySelector]" : {
+        "item 1" : "some content 1",
+        "item 2" : "some content 2"
+    }, 
+};
+ 
+console.log(jsoncode(myJsonObject, {mySelector: 'item 2'}));
+ 
+//{"Selected value": "some content 2"}
+```
+
+Default case
+```js
+const myJsonObject = {
+    "Selected value [BY mySelector]" : {
+        "item 1" : "some content 1",
+        "item 2" : "some content 2",
+        "#DEFAULT" : "some content 3"
+    }, 
+};
+ 
+console.log(jsoncode(myJsonObject, {mySelector: 'item 5'}));
+ 
+//{"Selected value": "some content 3"}
+```
+
+Boolean value
+```js
+const myJsonObject = {
+    "Selected value [BY mySelector]" : {
+        "#TRUE"  : "some content 1",
+        "#FALSE" : "some content 2"
+    }, 
+};
+ 
+console.log(jsoncode(myJsonObject, {mySelector: true}));
+ 
+//{"Selected value": "some content 1"}
+```
+
+Several levels
+```js
+const myJsonObject = {
+    "Selected value [BY mySelector, mySubSelector]" : {
+        "item 1" : {
+            "subItem A": "some content 1 A",
+            "subItem B": "some content 1 B"
+        },
+        "item 2" : {
+            "subItem A": "some content 2 A",
+            "subItem B": "some content 2 B"
+        }
+    }, 
+};
+ 
+console.log(jsoncode(myJsonObject, {mySelector: 'item 2', mySubSelector: 'subItem A'}));
+ 
+//{"Selected value" : "some content 2 A"}
 ```
