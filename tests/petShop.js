@@ -1,4 +1,4 @@
-require('../jsoncode.js');
+if (process.env.NODE_ENV === 'development') require('../jsoncode.js'); else require('../jsoncode.min.js');
 const petShop = require('./petShop.json');
 
 test('JSONCode: Pet shop / price list', () => {

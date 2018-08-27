@@ -1,6 +1,6 @@
 {
   "name": "jsoncode",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "JSON with conditional statements",
   "author": "Artem Varshavin",
   "license": "MIT",
@@ -11,11 +11,10 @@
     "switch",
     "if"
   ],
-  "main": "jsoncode.js",
+  "main": "jsoncode.min.js",
   "scripts": {
-    "test": "jest",
-    "pack": "browserify jsoncode.js -t [ babelify --presets [ env ] ] -g [ uglifyify ] > jsoncode.min.js",
-    "pack-map": "browserify jsoncode.js -d -t [ babelify --presets [ env ] ] -g [ uglifyify ] | exorcist jsoncode.min.js.map > jsoncode.min.js"
+    "test": "NODE_ENV=development jest",
+    "build": "babel jsoncode.js --presets env,minify --out-file jsoncode.min.js | NODE_ENV=production jest"
   },
   "repository": {
     "type": "git",
@@ -24,11 +23,8 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "babelify": "^8.0.0",
-    "browserify": "^14.5.0",
-    "exorcist": "^1.0.0",
-    "jest": "^21.2.1",
-    "uglifyify": "^4.0.5"
+    "babel-preset-minify": "^0.4.3",
+    "jest": "^21.2.1"
   },
   "jest": {
     "moduleFileExtensions": [

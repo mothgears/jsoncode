@@ -1,4 +1,4 @@
-const jsoncode = require('../jsoncode.js');
+const jsoncode = process.env.NODE_ENV === 'development' ? require('../jsoncode.js') : require('../jsoncode.min.js');
 const tests    = require('./base.json');
 
 const resultTree = jsoncode(tests, {

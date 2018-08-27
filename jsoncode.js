@@ -78,4 +78,6 @@ const parseItem = (node, model) => {
 	return newNode;
 };
 
-module.exports = JSON.specify = (src, model = null)=> model ? parseItem(src, model) : src;
+const jsoncode = (src, model = null)=> model ? parseItem(src, model) : src;
+if (typeof JSON !== 'undefined') JSON.specify = jsoncode;
+module.exports = jsoncode;
