@@ -5,8 +5,8 @@
     <title>Test</title>
     <script src="../jsoncode.min.js"></script>
     <script>
-		const petShop = {
-			"Animals": {
+        var petShop = {
+            "Animals": {
                 "cat [IF type = 'mammal' & carnivorous]": {
                     "size": "middle",
                         "canFly": false,
@@ -69,24 +69,24 @@
                     }
                 }
             }
-		};
+        };
 
-        const priceList = JSON.specify(petShop['Animals'], {
+        var priceList = JSON.specify(petShop['Animals'], {
             type: "mammal",
             carnivorous: true,
             target: "sellOne"
         });
 
-		const animalsFood = JSON.specify(petShop['Animals food'], {
-			city: "New York",
-			type: "mammal",
-			carnivorous: true,
-		});
+        var animalsFood = JSON.specify(petShop['Animals food'], {
+            city: "New York",
+            type: "mammal",
+            carnivorous: true,
+        });
 
-		const animalTypes = Object.keys(priceList);
-		for (let animalType of animalTypes) console.log(animalType, priceList[animalType]);
+        var animalTypes = Object.keys(priceList);
+        for (var i = 0; i < animalTypes.length; i++) console.log(animalTypes[i], priceList[animalTypes[i]]);
 
-		console.log('Animals food', animalsFood);
+        console.log('Animals food', animalsFood);
     </script>
 </head>
 <body>
