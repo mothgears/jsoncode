@@ -1,10 +1,10 @@
-if (process.env.NODE_ENV === 'development') require('../jsoncode.js'); else require('../jsoncode.min.js');
+if (process.env.NODE_ENV === 'development') require('../jsoncode.mjs'); else require('../jsoncode.pkg.js');
 const petShop = require('./petShop.json');
 
 test('JSONCode: Pet shop / price list', () => {
 	const priceList = JSON.specify(petShop['Animals'], {
 		type: "mammal",
-		carnivours: true,
+		carnivorous: true,
 		target: "sellOne"
 	});
 
@@ -26,7 +26,7 @@ test('JSONCode: Pet shop / animals food', () => {
 	const animalsFood = JSON.specify(petShop['Animals food'], {
 		city: "New York",
 		type: "mammal",
-		carnivours: true,
+		carnivorous: true,
 	});
 
 	expect(animalsFood).toEqual({

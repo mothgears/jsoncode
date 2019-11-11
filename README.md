@@ -6,7 +6,7 @@ JSON with conditional statements and switches
 ```json
 {
     "Animals": {
-        "cat [IF type = 'mammal' & carnivours]": {
+        "cat [IF type = 'mammal' & carnivorous]": {
             "size": "middle",
             "canFly": false,
             "worth [BY target]": {
@@ -15,7 +15,7 @@ JSON with conditional statements and switches
                 "buy": 70
             }
         },
-        "pony [IF type = 'mammal' & !carnivours]": {
+        "pony [IF type = 'mammal' & !carnivorous]": {
             "size": "big",
             "canFly": false,
             "worth [BY target]": {
@@ -24,7 +24,7 @@ JSON with conditional statements and switches
                 "buy": 1300
             }
         },
-        "beetle [IF type = 'insect' & carnivours]": {
+        "beetle [IF type = 'insect' & carnivorous]": {
             "size": "little",
             "canFly": true,
             "worth [BY target]": {
@@ -33,7 +33,7 @@ JSON with conditional statements and switches
                 "buy": 35
             }
         },
-        "dog [IF type = 'mammal' & carnivours]": {
+        "dog [IF type = 'mammal' & carnivorous]": {
             "size": "middle",
             "canFly": false,
             "worth [BY target]": {
@@ -45,7 +45,7 @@ JSON with conditional statements and switches
     },
     
     "Animals food": { 
-        "In stock [BY city, type, carnivours]": {
+        "In stock [BY city, type, carnivorous]": {
             "Washington" : {
                 "mammal" : {
                     "#TRUE": "100 kg",
@@ -78,7 +78,7 @@ const petShop  = require('./petShop.json');
  
 const priceList = jsoncode(petShop['Animals'], {
     type: "mammal",
-    carnivours: true,
+    carnivorous: true,
     target: "sellOne"
 });
  
@@ -86,7 +86,7 @@ const priceList = jsoncode(petShop['Animals'], {
 const animalsFood = JSON.specify(petShop['Animals food'], {
     city: "New York",
     type: "mammal",
-    carnivours: true,
+    carnivorous: true,
 });
  
 //Output
@@ -104,6 +104,18 @@ Animals food { 'In stock': '90 kg' }
 ```
 
 ## Manual
+
+| operator | meaning |
+| ---------|---------|
+| `&` | And |
+| <code>&#124;</code> | Or |
+| `=` | Equal to |
+| `!=` | Not equal to |
+| `>` | Greater than |
+| `<` | Less than |
+| `>=` | Greater than or equal to |
+| `<=` | Less than or equal to |
+
 #### Existence operator "IF"
 If condition is false, item removes from tree
 ```js
@@ -112,9 +124,10 @@ const myJsonObject = {
     "Element 2 [IF myVariable > 5]" : "some content 2", 
     "Element 3 [IF myVariable > 10]" : "some content 3" 
 };
- 
-console.log(jsoncode(myJsonObject, {myVariable: 7}));
- 
+
+const result = jsoncode(myJsonObject, {myVariable: 7});
+console.log(result);
+
 //{"Element 1": "some content 1", "Element 2": "some content 2"}
 ```
 
@@ -127,13 +140,14 @@ const myJsonObject = {
         "item 2" : "some content 2"
     }, 
 };
- 
-console.log(jsoncode(myJsonObject, {mySelector: 'item 2'}));
+
+const result = jsoncode(myJsonObject, {mySelector: 'item 2'});
+console.log(result);
  
 //{"Selected value": "some content 2"}
 ```
 
-Default case
+#####Default case
 ```js
 const myJsonObject = {
     "Selected value [BY mySelector]" : {
@@ -142,13 +156,14 @@ const myJsonObject = {
         "#DEFAULT" : "some content 3"
     }, 
 };
- 
-console.log(jsoncode(myJsonObject, {mySelector: 'item 5'}));
+
+const result = jsoncode(myJsonObject, {mySelector: 'item 5'});
+console.log(result);
  
 //{"Selected value": "some content 3"}
 ```
 
-Boolean value
+#####Boolean value
 ```js
 const myJsonObject = {
     "Selected value [BY mySelector]" : {
@@ -156,13 +171,14 @@ const myJsonObject = {
         "#FALSE" : "some content 2"
     }, 
 };
- 
-console.log(jsoncode(myJsonObject, {mySelector: true}));
+
+const result = jsoncode(myJsonObject, {mySelector: true});
+console.log(result);
  
 //{"Selected value": "some content 1"}
 ```
 
-Several levels
+#####Several levels
 ```js
 const myJsonObject = {
     "Selected value [BY mySelector, mySubSelector]" : {
@@ -176,8 +192,42 @@ const myJsonObject = {
         }
     }, 
 };
- 
-console.log(jsoncode(myJsonObject, {mySelector: 'item 2', mySubSelector: 'subItem A'}));
+
+const result = jsoncode(myJsonObject, {mySelector: 'item 2', mySubSelector: 'subItem A'});
+console.log(result);
  
 //{"Selected value" : "some content 2 A"}
+```
+
+#### Object to array operator "AS ARRAY"
+```js
+const myJsonObject = {
+    "Its Array [AS ARRAY]" : {
+        "[IF myVariable > 0]" : "some content 1", 
+        "[IF myVariable > 5]" : "some content 2", 
+        "[IF myVariable > 10]" : "some content 3" 
+    }
+};
+
+const result = jsoncode(myJsonObject, {myVariable: 7});
+console.log(result);
+
+//{"Its Array": ["some content 1", "some content 2"]}
+```
+
+##### Spread operator
+```js
+const myJsonObject = {
+    "Its Array [AS ARRAY]" : {
+        "[IF    myVariable >  0]" : "some content 1", 
+        "[...IF myVariable >  5]" : ["some content 2", "some content 3"], 
+        "[...IF myVariable > 10]" : ["some content 4", "some content 5"],
+        "[IF    myVariable >  6]" : ["some content 6", "some content 7"] 
+    }
+};
+
+const result = jsoncode(myJsonObject, {myVariable: 7});
+console.log(result);
+
+//{"Its Array": ["some content 1", "some content 2", "some content 3", ["some content 6", "some content 7"]]}
 ```

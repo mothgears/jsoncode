@@ -1,12 +1,15 @@
-const jsoncode = process.env.NODE_ENV === 'development' ? require('../jsoncode.js') : require('../jsoncode.min.js');
-const tests    = require('./base.json');
+const jsoncode = process.env.NODE_ENV === 'development' ? require('../jsoncode.mjs').default : require('../jsoncode.pkg.js');
+
+const tests = require('./base.json');
 
 const resultTree = jsoncode(tests, {
 	boolTrue    : true,
 	boolFalse   : false,
 	stringAlpha : "alpha",
 	stringBeta  : "beta",
-	int10       : 10
+	int10       : 10,
+	stringAlpha2: "alpha & itsString = @",
+	myVariable  : 7
 });
 
 test('JSONCode: TEST 1', () => {
@@ -20,7 +23,16 @@ test('JSONCode: TEST 1', () => {
 test('JSONCode: TEST 1B', () => {
 	expect(resultTree["TEST 1B"]).toEqual({
 		"item7":"4a",
-		"item7b":"4aa"
+		"item7b":"4aa",
+		"item8c":"4cb"
+	});
+});
+
+test('JSONCode: TEST 1BX', () => {
+	expect(resultTree["TEST 1BX"]).toEqual({
+		"item7X":"4a",
+		"item7bX":"4aa",
+		"item8cX":"4cb"
 	});
 });
 
@@ -34,6 +46,18 @@ test('JSONCode: TEST 1C', () => {
 		"item19":"8b",
 		"item22":"9b",
 		"item23":"9c"
+	});
+});
+
+test('JSONCode: TEST 1X', () => {
+	expect(resultTree["TEST 1X"]).toEqual({
+		"item0": ["1a", "4a", "5b", "6a"]
+	});
+});
+
+test('JSONCode: TEST 1Z', () => {
+	expect(resultTree["TEST 1Z"]).toEqual({
+		"item0": [["10a", "10b"], "10c", "10d"]
 	});
 });
 
@@ -97,5 +121,11 @@ test('JSONCode: TEST 9', () => {
 			{"item11":"1a"},
 			{"item22":"2b","item23":"3b"}
 		]
+	});
+});
+
+test('JSONCode: TEST Array', () => {
+	expect(resultTree["TEST Array"]).toEqual({
+		"Its Array": ["some content 1", "some content 2", "some content 3", ["some content 6", "some content 7"]]
 	});
 });

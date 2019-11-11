@@ -7,3 +7,5 @@ Icon?
 node_modules/
 .idea
 yarn-error.log
+
+jsoncode.pkg.js

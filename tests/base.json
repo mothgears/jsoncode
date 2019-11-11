@@ -9,10 +9,21 @@
   },
 
   "TEST 1B" : {
-    "item7 [IF stringAlpha = 'alpha']" : "4a",
-    "item8 [IF stringAlpha = 'beta']"  : "4b",
-    "item7b [IF stringAlpha 'alpha']"  : "4aa",
-    "item8b [IF stringAlpha 'beta']"   : "4bb"
+    "item7  [IF stringAlpha =  'alpha']" : "4a",
+    "item8  [IF stringAlpha =  'beta' ]"  : "4b",
+    "item7b [IF stringAlpha    'alpha']"  : "4aa",
+    "item8b [IF stringAlpha    'beta' ]"   : "4bb",
+    "item7c [IF stringAlpha != 'alpha']" : "4ca",
+    "item8c [IF stringAlpha != 'beta' ]"  : "4cb"
+  },
+
+  "TEST 1BX" : {
+    "item7X [IF stringAlpha2 = 'alpha & itsString = @']" : "4a",
+    "item8X [IF stringAlpha2 = 'beta & itsString = @']"  : "4b",
+    "item7bX [IF stringAlpha2 'alpha & itsString = @']"  : "4aa",
+    "item8bX [IF stringAlpha2 'beta & itsString = @']"   : "4bb",
+    "item7cX [IF stringAlpha2 != 'alpha & itsString = @']" : "4ca",
+    "item8cX [IF stringAlpha2 != 'beta & itsString = @']"  : "4cb"
   },
 
   "TEST 1C" : {
@@ -40,6 +51,31 @@
     "item23 [IF int10 <= 11]" : "9c"
   },
 
+  "TEST 1X" : {
+    "item0 [AS ARRAY]" : {
+      "[IF boolTrue]"   : "1a",
+      "[IF !boolTrue]"  : "1b",
+
+      "[IF stringAlpha = 'alpha']" : "4a",
+      "[IF stringAlpha = 'beta']"  : "4b",
+
+      "[IF int10 = 9]"  : "5a",
+      "[IF int10 = 10]" : "5b",
+
+      "[IF int10 > 9]"  : "6a",
+      "[IF int10 < 9]"  : "7a"
+    }
+  },
+
+  "TEST 1Z" : {
+    "item0 [AS ARRAY]" : {
+      "[IF boolTrue & !boolFalse]" : ["10a", "10b"],
+      "[...IF stringAlpha = 'alpha' & stringBeta = 'beta']" : ["10c", "10d"],
+
+      "[IF !boolTrue | boolFalse]" : ["11a", "11b"],
+      "[...IF stringAlpha != 'alpha' | stringBeta != 'beta' ]" : ["11c", "11d"]
+    }
+  },
 
   "TEST 2" : {
     "item1 [BY boolTrue]" : {
@@ -152,5 +188,14 @@
         }
       }
     ]
+  },
+
+  "TEST Array" : {
+    "Its Array [AS ARRAY]" : {
+      "[IF    myVariable >  0]" : "some content 1",
+      "[...IF myVariable >  5]" : ["some content 2", "some content 3"],
+      "[...IF myVariable > 10]" : ["some content 4", "some content 5"],
+      "[IF    myVariable >  6]" : ["some content 6", "some content 7"]
+    }
   }
 }

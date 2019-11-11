@@ -1,6 +1,6 @@
 {
   "name": "jsoncode",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "JSON with conditional statements",
   "author": "Artem Varshavin",
   "license": "MIT",
@@ -11,10 +11,11 @@
     "switch",
     "if"
   ],
-  "main": "jsoncode.min.js",
+  "main": "jsoncode.pkg.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=development jest",
-    "build": "babel jsoncode.js --presets env,minify --out-file jsoncode.min.js | cross-env NODE_ENV=production jest"
+    "test": "cross-env NODE_ENV=development node --experimental-modules --experimental-json-modules node_modules/jest/bin/jest.js",
+    "build": "cross-env NODE_ENV=production babel jsoncode.mjs --plugins=babel-plugin-array-includes,./lib/babel-plugin-starts-with-ends-with.js,babel-plugin-add-module-exports --presets env --out-file jsoncode.pkg.js | jest",
+    "minify": "cross-env NODE_ENV=production babel jsoncode.mjs --plugins=babel-plugin-array-includes,./lib/babel-plugin-starts-with-ends-with.js,babel-plugin-remove-import-export --presets env,minify --out-file jsoncode.min.js"
   },
   "repository": {
     "type": "git",
@@ -23,20 +24,27 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
+    "babel-plugin-add-module-exports": "^1.0.2",
+    "babel-plugin-array-includes": "^2.0.3",
+    "babel-plugin-remove-import-export": "^1.1.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-minify": "^0.5.0",
     "cross-env": "^5.2.0",
-    "jest": "^24.8.0"
+    "jest": "^24.8.0",
+    "jest-esm-transformer": "^1.0.0"
   },
   "jest": {
     "moduleFileExtensions": [
       "js",
+      "mjs",
       "json"
     ],
     "testMatch": [
-      "**/tests/**/*.(js?(x))",
-      "**/?(*.)(spec|test).(js?(x))"
-    ]
+      "**/tests/**/*.(js|mjs)"
+    ],
+    "transform": {
+      ".mjs": "jest-esm-transformer"
+    }
   },
   "dependencies": {}
 }

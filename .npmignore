@@ -1,7 +1,8 @@
 .idea
 .gitignore
 .npmignore
-tests/
+/tests
+/lib
 yarn-error.log
 yarn.lock
-jsoncode.js
+jsoncode.mjs
