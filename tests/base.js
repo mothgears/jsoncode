@@ -55,12 +55,6 @@ test('JSONCode: TEST 1X', () => {
 	});
 });
 
-test('JSONCode: TEST 1Z', () => {
-	expect(resultTree["TEST 1Z"]).toEqual({
-		"item0": [["10a", "10b"], "10c", "10d"]
-	});
-});
-
 test('JSONCode: TEST 2', () => {
 	expect(resultTree["TEST 2"]).toEqual({
 		"item1":"1a",
@@ -124,8 +118,49 @@ test('JSONCode: TEST 9', () => {
 	});
 });
 
-test('JSONCode: TEST Array', () => {
-	expect(resultTree["TEST Array"]).toEqual({
-		"Its Array": ["some content 1", "some content 2", "some content 3", ["some content 6", "some content 7"]]
+test('JSONCode: TEST Spread', () => {
+	expect(resultTree["TEST Spread"]).toEqual({
+		objectItem: {
+			simpleItem: "simpleItem value",
+			simpleItemReplaced: "simpleItemReplaced newValue",
+			objectItem: {
+				localSimpleItem1: "localSimpleItem1 value",
+				localSimpleItem2: "localSimpleItem2 value"
+			},
+			objectItemReplaced: {
+				"newLocalSimpleItem1": "newLocalSimpleItem1 value",
+				"newLocalSimpleItem2": "newLocalSimpleItem2 value"
+			},
+			objectItemCombined: {
+				localSimpleItem1: "localSimpleItem1 value",
+				localSimpleItemReplaced: "localSimpleItemReplaced newValue",
+				localSimpleItem3: "localSimpleItem3 value"
+			},
+			arrayItemReplaced: [
+				"newLocalSimpleItem1",
+				"newLocalSimpleItem2"
+			],
+			arrayItemCombined: [
+				"localSimpleItem1",
+				"dublicatedlocalSimpleItem2",
+				"dublicatedlocalSimpleItem2",
+				"localSimpleItem3"
+			],
+			arrayItemCombinedUnique: [
+				"localSimpleItem1",
+				"uniquelocalSimpleItem2",
+				"localSimpleItem3"
+			]
+		}
+	});
+});
+
+test('JSONCode: TEST As Array', () => {
+	expect(resultTree["TEST As Array"]).toEqual({
+		asArrayItem: [
+			"value1", "value2", "value3",
+			"value4", ["value6", "value7"],
+			"value10", "value11"
+		]
 	});
 });

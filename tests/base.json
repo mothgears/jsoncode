@@ -10,11 +10,11 @@
 
   "TEST 1B" : {
     "item7  [IF stringAlpha =  'alpha']" : "4a",
-    "item8  [IF stringAlpha =  'beta' ]"  : "4b",
-    "item7b [IF stringAlpha    'alpha']"  : "4aa",
-    "item8b [IF stringAlpha    'beta' ]"   : "4bb",
+    "item8  [IF stringAlpha =  'beta' ]" : "4b",
+    "item7b [IF stringAlpha    'alpha']" : "4aa",
+    "item8b [IF stringAlpha    'beta' ]" : "4bb",
     "item7c [IF stringAlpha != 'alpha']" : "4ca",
-    "item8c [IF stringAlpha != 'beta' ]"  : "4cb"
+    "item8c [IF stringAlpha != 'beta' ]" : "4cb"
   },
 
   "TEST 1BX" : {
@@ -64,16 +64,6 @@
 
       "[IF int10 > 9]"  : "6a",
       "[IF int10 < 9]"  : "7a"
-    }
-  },
-
-  "TEST 1Z" : {
-    "item0 [AS ARRAY]" : {
-      "[IF boolTrue & !boolFalse]" : ["10a", "10b"],
-      "[...IF stringAlpha = 'alpha' & stringBeta = 'beta']" : ["10c", "10d"],
-
-      "[IF !boolTrue | boolFalse]" : ["11a", "11b"],
-      "[...IF stringAlpha != 'alpha' | stringBeta != 'beta' ]" : ["11c", "11d"]
     }
   },
 
@@ -190,12 +180,93 @@
     ]
   },
 
-  "TEST Array" : {
-    "Its Array [AS ARRAY]" : {
-      "[IF    myVariable >  0]" : "some content 1",
-      "[...IF myVariable >  5]" : ["some content 2", "some content 3"],
-      "[...IF myVariable > 10]" : ["some content 4", "some content 5"],
-      "[IF    myVariable >  6]" : ["some content 6", "some content 7"]
+  "TEST Spread": {
+    "objectItem": {
+      "simpleItem": "simpleItem value",
+      "simpleItemReplaced": "simpleItemReplaced oldValue",
+      "objectItem": {
+        "localSimpleItem1": "localSimpleItem1 value",
+        "localSimpleItem2": "localSimpleItem2 value"
+      },
+      "objectItemReplaced": {
+        "oldLocalSimpleItem1": "oldLocalSimpleItem1 value",
+        "oldLocalSimpleItem2": "oldLocalSimpleItem2 value"
+      },
+      "objectItemCombined": {
+        "localSimpleItem1": "localSimpleItem1 value",
+        "localSimpleItemReplaced": "localSimpleItemReplaced oldValue"
+      },
+      "arrayItemReplaced": [
+        "oldLocalSimpleItem1",
+        "oldLocalSimpleItem2"
+      ],
+      "arrayItemCombined": [
+        "localSimpleItem1",
+        "dublicatedlocalSimpleItem2"
+      ],
+      "arrayItemCombinedUnique": [
+        "localSimpleItem1",
+        "uniquelocalSimpleItem2"
+      ],
+      "[...IF boolTrue]": {
+        "simpleItemReplaced": "simpleItemReplaced newValue",
+        "objectItemReplaced": {
+          "newLocalSimpleItem1": "newLocalSimpleItem1 value",
+          "newLocalSimpleItem2": "newLocalSimpleItem2 value"
+        },
+        "objectItemCombined [*...]": {
+          "localSimpleItemReplaced": "localSimpleItemReplaced newValue",
+          "localSimpleItem3": "localSimpleItem3 value"
+        },
+        "arrayItemReplaced": [
+          "newLocalSimpleItem1",
+          "newLocalSimpleItem2"
+        ],
+        "arrayItemCombined [*...]": [
+          "dublicatedlocalSimpleItem2",
+          "localSimpleItem3"
+        ],
+        "arrayItemCombinedUnique [!...]": [
+          "uniquelocalSimpleItem2",
+          "localSimpleItem3"
+        ]
+      },
+      "[...IF boolFalse]": {
+        "simpleItemReplaced": "simpleItemReplaced newValueF",
+        "objectItemReplaced": {
+          "newLocalSimpleItem1": "newLocalSimpleItem1 valueF",
+          "newLocalSimpleItem2": "newLocalSimpleItem2 valueF"
+        },
+        "objectItemCombined [*...]": {
+          "localSimpleItemReplaced": "localSimpleItemReplaced newValueF",
+          "localSimpleItem3": "localSimpleItem3 valueF"
+        },
+        "arrayItemReplaced": [
+          "newLocalSimpleItem1F",
+          "newLocalSimpleItem2F"
+        ],
+        "arrayItemCombined [*...]": [
+          "dublicatedlocalSimpleItem2F",
+          "localSimpleItem3F"
+        ],
+        "arrayItemCombinedUnique [!...]": [
+          "uniquelocalSimpleItem2F",
+          "localSimpleItem3F"
+        ]
+      }
+    }
+  },
+
+  "TEST As Array" : {
+    "asArrayItem [AS ARRAY]" : {
+      "[ * ]"              : "value1",
+      "[...]"              : ["value2", "value3"],
+      "[IF int10 >  0]"    : "value4",
+      "[IF int10 > 11]"    : "value5",
+      "[IF int10 >  6]"    : ["value6", "value7"],
+      "[IF int10 > 17]"    : ["value8", "value9"],
+      "[...IF int10 >  7]" : ["value10", "value11"],
+      "[...IF int10 > 20]" : ["value12", "value13"]
     }
   }
 }

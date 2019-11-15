@@ -46,28 +46,23 @@ const condTypes = {
 
 const parseItem = (node, model) => {
 	if (typeof node !== 'object') return node;
-
-	if (Array.isArray(node)) {
-		const newArray = [];
-		node.forEach(item=>newArray.push(parseItem(item, model)));
-		return newArray;
-	}
+	if (Array.isArray(node))      return node.map(item=>parseItem(item, model));
 
 	const newNode = {};
 	const keys = Object.keys(node);
 	for (const key of keys) {
 		if (key.endsWith(']')) {
 			const pureIF = key.startsWith('[IF ');
-			const includesIF = key.startsWith('[...IF ');
+			const spreadIF = key.startsWith('[...IF ');
 
-			if (key.includes(' [IF ') || pureIF || includesIF) {
+			if (key.includes(' [IF ') || pureIF || spreadIF) {
 				let
 					newKey = key,
 					cond;
 
-				if (pureIF)          cond = key.slice('[IF '.length, -1);
-				else if (includesIF) cond = key.slice('[...IF '.length, -1);
-				else                 [newKey, cond] = key.slice(0, -1).split(' [IF ');
+				if (pureIF)        cond = key.slice('[IF '.length, -1);
+				else if (spreadIF) cond = key.slice('[...IF '.length, -1);
+				else               [newKey, cond] = key.slice(0, -1).split(' [IF ');
 
 				newKey = newKey.trim();
 				cond = cond.trim();
@@ -98,7 +93,24 @@ const parseItem = (node, model) => {
 					total = total || local;
 				});
 
-				if (total) newNode[newKey] = parseItem(node[key], model);
+				if (total) {
+					const parsedItem = parseItem(node[key], model);
+					if (spreadIF && typeof parsedItem === 'object' && !Array.isArray(parsedItem)) {
+						for (let [key, value] of Object.entries(parsedItem)) {
+							if (key.endsWith(' [*...]') || key.endsWith(' [!...]') && typeof value === 'object') {
+								let realKey = key.slice(0, -' [*...]'.length);
+								if (Array.isArray(value)) {
+									if (key.endsWith(' [!...]') && newNode[realKey]) for (let item of value) {
+										if (!newNode[realKey].includes(item)) newNode[realKey].push(item);
+									}
+									else newNode[realKey] = [...(newNode[realKey]||[]), ...value];
+								} else {
+									newNode[realKey] = {...(newNode[realKey]||{}), ...value};
+								}
+							} else newNode[key] = value;
+						}
+					} else newNode[newKey] = parsedItem;
+				}
 				continue;
 			}
 
@@ -122,7 +134,7 @@ const parseItem = (node, model) => {
 				const obj = parseItem(node[key], model);
 				let arr = [];
 				for (let [cond, v] of Object.entries(obj)) {
-					if (cond.startsWith('[...IF ') && Array.isArray(v)) arr = [...arr, ...v];
+					if ((cond.startsWith('[...IF ') || cond === '[...]') && Array.isArray(v)) arr = [...arr, ...v];
 					else arr.push(v);
 				}
 				newNode[newKey] = arr;

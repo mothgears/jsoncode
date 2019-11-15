@@ -202,9 +202,10 @@ console.log(result);
 #### Object to array operator "AS ARRAY"
 ```js
 const myJsonObject = {
-    "Its Array [AS ARRAY]" : {
-        "[IF myVariable > 0]" : "some content 1", 
-        "[IF myVariable > 5]" : "some content 2", 
+    "Its Array [AS ARRAY]" : {  
+        "[ * ]"                : "some content 0",
+        "[IF myVariable >  0]" : "some content 1", 
+        "[IF myVariable >  5]" : "some content 2", 
         "[IF myVariable > 10]" : "some content 3" 
     }
 };
@@ -212,22 +213,47 @@ const myJsonObject = {
 const result = jsoncode(myJsonObject, {myVariable: 7});
 console.log(result);
 
-//{"Its Array": ["some content 1", "some content 2"]}
+//{"Its Array": ["some content 0", "some content 1", "some content 2"]}
 ```
 
-##### Spread operator
+##### Spread and combine operators "...", "...IF", "*..."
 ```js
 const myJsonObject = {
+    "Its Object" : {
+        "item1" : "some content 1", 
+        "item2" : { "subItem1": "some content 1", "subItem2": "some content 2" }, 
+        "item3" : { "subItem1": "some content 1", "subItem2": "some content 2" }, 
+        "[...IF myVariable > 5]" : {
+            "item2"        : { "subItem2": "some content 2b", "subItem3": "some content 3b" }, 
+            "item3 [*...]" : { "subItem2": "some content 2b", "subItem3": "some content 3b" }, //Combine operator
+        }
+    },
     "Its Array [AS ARRAY]" : {
-        "[IF    myVariable >  0]" : "some content 1", 
-        "[...IF myVariable >  5]" : ["some content 2", "some content 3"], 
-        "[...IF myVariable > 10]" : ["some content 4", "some content 5"],
-        "[IF    myVariable >  6]" : ["some content 6", "some content 7"] 
+        "[...]"                  : ["some content 0a", "some content 0b"], 
+        "[IF    myVariable > 0]" : "some content 1", 
+        "[...IF myVariable > 5]" : ["some content 2", "some content 3"], 
+        "[IF    myVariable > 6]" : ["some content 6", "some content 7"] 
     }
 };
 
 const result = jsoncode(myJsonObject, {myVariable: 7});
 console.log(result);
 
-//{"Its Array": ["some content 1", "some content 2", "some content 3", ["some content 6", "some content 7"]]}
+/*
+{
+    "Its Object": {
+        "item1" : "some content 1",
+        "item2" : { "subItem2": "some content 2b", "subItem3": "some content 3b" },
+        "item3" : { 
+            "subItem1": "some content 1", 
+            "subItem2": "some content 2b", 
+            "subItem3": "some content 3b"
+        }
+    }
+    "Its Array": [
+        "some content 0a", "some content 0b", "some content 1", "some content 2", 
+        "some content 3", ["some content 6", "some content 7"]
+    ],
+}
+*/
 ```
