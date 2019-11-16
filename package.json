@@ -13,7 +13,6 @@
   ],
   "main": "jsoncode.pkg.js",
   "scripts": {
-    "test2": "cross-env NODE_ENV=development node --experimental-modules --experimental-json-modules mytest.mjs",
     "test": "cross-env NODE_ENV=development node --experimental-modules --experimental-json-modules node_modules/jest/bin/jest.js",
     "build": "cross-env NODE_ENV=production babel jsoncode.mjs --plugins=babel-plugin-transform-object-rest-spread,babel-plugin-array-includes,./lib/babel-plugin-starts-with-ends-with.js,babel-plugin-add-module-exports --presets env --out-file jsoncode.pkg.js | jest"
   },
