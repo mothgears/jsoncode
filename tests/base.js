@@ -9,7 +9,6 @@ const resultTree = jsoncode(tests, {
 	stringBeta  : "beta",
 	int10       : 10,
 	stringAlpha2: "alpha & itsString = @",
-	myVariable  : 7
 });
 
 test('JSONCode: TEST 1', () => {
