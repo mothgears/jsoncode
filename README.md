@@ -8,22 +8,25 @@ JSON with conditional statements and switches
 ```json
 {
     "Animals": {
-        "cat [IF type = 'mammal' & carnivorous]": {
-            "size": "little",
-            "canFly": false,
+        "cat [IF size = 'little' & carnivorous]": {
+            "type": "mammal",
             "worth [BY target]": {
                 "sellOne": 100,
-                "sellInBulk" : 80,
-                "buy": 70
+                "sellInBulk" : 80
             }
         },
-        "dog [IF type = 'mammal' & carnivorous]": {
-            "size": "middle",
-            "canFly": false,
+        "dog [IF size = 'middle' & carnivorous]": {
+            "type": "mammal",
             "worth [BY target]": {
                 "sellOne": 130,
-                "sellInBulk" : 110,
-                "buy": 90
+                "sellInBulk" : 110
+            }
+        },
+        "chinchilla [IF size = 'little' & !carnivorous]": {
+            "type": "mammal",
+            "worth [BY target]": {
+                "sellOne": 50,
+                "sellInBulk" : 45
             }
         }
     },
@@ -61,7 +64,7 @@ const jsoncode = require('jsoncode');
 const petShop  = require('./petShop.json');
  
 const priceList = jsoncode(petShop['Animals'], {
-    type: "mammal",
+    size: "little",
     carnivorous: true,
     target: "sellOne"
 });
@@ -70,7 +73,7 @@ const priceList = jsoncode(petShop['Animals'], {
 const animalsFood = JSON.specify(petShop['Animals food'], {
     city: "New York",
     type: "mammal",
-    carnivorous: true,
+    carnivorous: true
 });
  
 //Output
@@ -82,8 +85,7 @@ console.log('Animals food', animalsFood);
 
 **Result**:
 ```
-cat { size: 'middle', canFly: false, worth: 100 }
-dog { size: 'middle', canFly: false, worth: 130 }
+cat { type: 'mammal', worth: 100 }
 Animals food { 'In stock': '90 kg' }
 ```
 
