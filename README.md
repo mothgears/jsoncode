@@ -133,6 +133,22 @@ console.log(result);
 //{"Selected value": "some content 2"}
 ```
 
+Using regExp
+```js
+const myJsonObject = {
+    "Selected value [BY mySelector]" : {
+        "item 1" : "some content 1",
+        "item 2" : "some content 2",
+        "item 3" : "some content 3"
+    }, 
+};
+
+const result = jsoncode(myJsonObject, {mySelector: /^(item 2|item 3)$/});
+console.log(result);
+ 
+//{"Selected value": ["some content 2", "some content 3"]}
+```
+
 **Default case**
 ```js
 const myJsonObject = {
@@ -202,7 +218,8 @@ console.log(result);
 //{"Its Array": ["some content 0", "some content 1", "some content 2"]}
 ```
 
-####Spread and combine operators `[...IF ]`, `[...]`, `[*...]`
+####Spread and combine operators `[...IF ]`, `[...BY ]`, `[...]`, `[*...]`
+####`[...IF ]`
 ```js
 const myJsonObject = {
     "Its Object" : {
@@ -229,7 +246,10 @@ console.log(result);
 {
     "Its Object": {
         "item1" : "some content 1",
-        "item2" : { "subItem2": "some content 2b", "subItem3": "some content 3b" },
+        "item2" : { 
+            "subItem2": "some content 2b", 
+            "subItem3": "some content 3b" 
+        },
         "item3" : { 
             "subItem1": "some content 1", 
             "subItem2": "some content 2b", 
@@ -240,6 +260,42 @@ console.log(result);
         "some content 0a", "some content 0b", "some content 1", "some content 2", 
         "some content 3", ["some content 6", "some content 7"]
     ],
+}
+*/
+```
+####`[...BY ]`
+```js
+const myJsonObject = {
+    "item1" : "some content 1", 
+    "item2" : { "subItem1": "some content 1", "subItem2": "some content 2" }, 
+    "item3" : { "subItem1": "some content 1", "subItem2": "some content 2" }, 
+    "[...BY myVariable]" : {
+        "variantA" : {
+            "item2"        : { "subItem2": "some content 2b", "subItem3": "some content 3b" }, 
+            "item3 [*...]" : { "subItem2": "some content 2b", "subItem3": "some content 3b" },
+        },
+        "variantB" : {
+            "item2"        : { "subItem2": "some content 2c", "subItem3": "some content 3c" }, 
+            "item3 [*...]" : { "subItem2": "some content 2c", "subItem3": "some content 3c" },
+        }
+    }
+};
+
+const result = jsoncode(myJsonObject, {myVariable: 'variantA'});
+console.log(result);
+
+/*
+{
+    "item1" : "some content 1",
+    "item2" : { 
+        "subItem2": "some content 2b", 
+        "subItem3": "some content 3b" 
+    },
+    "item3" : { 
+        "subItem1": "some content 1", 
+        "subItem2": "some content 2b", 
+        "subItem3": "some content 3b"
+    }
 }
 */
 ```

@@ -9,6 +9,7 @@ const resultTree = jsoncode(tests, {
 	stringBeta  : "beta",
 	int10       : 10,
 	stringAlpha2: "alpha & itsString = @",
+	rxItemAItemB: /^(itemA|itemB)$/
 });
 
 test('JSONCode: TEST 1', () => {
@@ -67,6 +68,12 @@ test('JSONCode: TEST 3', () => {
 	expect(resultTree["TEST 3"]).toEqual({
 		"item1":"1a",
 		"item2":"2b"
+	});
+});
+
+test('JSONCode: TEST 3B', () => {
+	expect(resultTree["TEST 3B"]).toEqual({
+		"item1":["1b", "1c"]
 	});
 });
 
@@ -161,5 +168,28 @@ test('JSONCode: TEST As Array', () => {
 			"value4", ["value6", "value7"],
 			"value10", "value11"
 		]
+	});
+});
+
+test('JSONCode: TEST By Spread', () => {
+	expect(resultTree["TEST [...BY ]"]).toEqual({
+		"objectItem" : {
+			"item1" : "value1",
+			"item2" : "value2a",
+			"item3" : ["value3a", "value4a"],
+			"item4" : ["value5", "value6", "value5a", "value6a"],
+			"item5" : { "item5.2" : "value9", "item5.2a" : "value10" },
+			"item6" : { "item6.1" : "value9", "item6.2" : "value11", "item6.2a" : "value12" }
+		}
+	});
+});
+
+test('JSONCode: TEST By regExp', () => {
+	expect(resultTree["TEST [...BY ] regExp"]).toEqual({
+		"objectItem" : {
+			"item1" : "value1",
+			"item3" : "value3a",
+			"item4" : "value4a"
+		}
 	});
 });

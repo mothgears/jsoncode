@@ -27,15 +27,7 @@ const condTypes = {
 		let a = getStringValue(_a, s),
 			c = getStringValue(_c, s);
 
-		/*let simp = null;
-
-		if (b === '=' && _a.startsWith(`*`) && c !== false) {
-			_a = _a.slice(1);
-			simp = { group: _a, key: c };
-		}*/
-
 		if (!m) {
-			//if (simp) return simp;
 			return true;
 		}
 
@@ -59,7 +51,7 @@ const parseLogicalExp = (cond, model) => {
 
 	cond = cond.trim();
 
-	let total = false;//, simp = null;
+	let total = false;
 
 	let condStrings = cond.split(`'`);
 	cond = [];
@@ -80,7 +72,6 @@ const parseLogicalExp = (cond, model) => {
 			const method = condTypes[cond.length];
 			if (typeof method !== 'function') throw `Unknown condition type "${cond.join(' ')}"`;
 			const result = method(model, cond, condStrings);
-			//if (typeof result !== 'boolean') simp = result;
 			local = local && result;
 		});
 		total = total || local;
@@ -130,33 +121,50 @@ const parseItem = (node, model) => {
 								}
 							} else newNode[key] = value;
 						}
-						/*if (!model && typeof isTrue !== 'boolean') {
-							newNode[isTrue.group] = newNode[isTrue.group] || [];
-							newNode[isTrue.group].push(isTrue.key)
-						}*/
 					} else newNode[newKey] = parsedItem;
 				}
 
 				continue;
 			}
 
-			if (key.includes(' [BY ')) {
-				let [newKey, caseline] = key.slice(0, -1).split(' [BY ');
+			//const pureBY   = key.startsWith('[BY ');
+			const spreadBY = key.startsWith('[...BY ');
+			if (key.includes(' [BY ') || spreadBY) {
+				let newKey = key, caseline;
+
+				if (spreadBY) caseline  = key.slice('[...BY '.length, -1);
+				else [newKey, caseline] = key.slice(0, -1).split(' [BY ');
+
 				newKey = newKey.trim();
+				caseline = caseline.trim();
 
 				caseline = caseline.split(', ');
 				let selectedCase = node[key];
-				if (model) {
-					for (let casename of caseline) {
-						let casevalue = model[casename.trim()];
-						if (typeof casevalue === 'boolean') {
-							casevalue = casevalue ? '#TRUE' : '#FALSE';
-						}
-						selectedCase = selectedCase[casevalue] || selectedCase['#DEFAULT'];
+
+				for (let casename of caseline) {
+					let casevalue = model[casename.trim()];
+					if (typeof casevalue === 'boolean') {
+						casevalue = casevalue ? '#TRUE' : '#FALSE';
 					}
-					if (selectedCase !== undefined) newNode[newKey] = parseItem(selectedCase, model);
-				} else {
-					newNode[newKey] = Object.entries(selectedCase).map(([, value]) => parseItem(value));
+					selectedCase = selectedCase[casevalue] || selectedCase['#DEFAULT'];
+				}
+				if (selectedCase !== undefined) {
+					const parsedItem = parseItem(selectedCase, model);
+					if (spreadBY && typeof parsedItem === 'object' && !Array.isArray(parsedItem)) {
+						for (let [key, value] of Object.entries(parsedItem)) {
+							if (key.endsWith(' [*...]') || key.endsWith(' [!...]') && typeof value === 'object') {
+								let realKey = key.slice(0, -' [*...]'.length);
+								if (Array.isArray(value)) {
+									if (key.endsWith(' [!...]') && newNode[realKey]) for (let item of value) {
+										if (!newNode[realKey].includes(item)) newNode[realKey].push(item);
+									}
+									else newNode[realKey] = [...(newNode[realKey]||[]), ...value];
+								} else {
+									newNode[realKey] = {...(newNode[realKey]||{}), ...value};
+								}
+							} else newNode[key] = value;
+						}
+					} else newNode[newKey] = parsedItem;
 				}
 
 				continue;
@@ -237,8 +245,8 @@ const select = (node, rxline) => {
 	return [];
 };
 
-const jsoncode = (src, model = undefined)=> {
-	if (model !== undefined) return parseItem(src, model);
+const jsoncode = (src, model = null)=> {
+	if (model) return parseItem(src, model);
 	else return {
 		select: (...rxline) => select(src, rxline),
 	}

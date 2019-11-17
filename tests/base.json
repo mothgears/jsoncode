@@ -104,6 +104,14 @@
     }
   },
 
+  "TEST 3B" : {
+    "item1 [BY rxItemBItemC]" : {
+      "itemA" : "1a",
+      "itemB" : "1b",
+      "itemC" : "1c"
+    }
+  },
+
   "TEST 4" : {
     "item1 [BY stringAlpha]" : {
       "alpha" : {
@@ -267,6 +275,52 @@
       "[IF int10 > 17]"    : ["value8", "value9"],
       "[...IF int10 >  7]" : ["value10", "value11"],
       "[...IF int10 > 20]" : ["value12", "value13"]
+    }
+  },
+
+  "TEST [...BY ]" : {
+    "objectItem" : {
+      "item1" : "value1",
+      "item2" : "value2",
+      "item3" : ["value3", "value4"],
+      "item4" : ["value5", "value6"],
+      "item5" : { "item5.1" : "value7", "item5.2" : "value8" },
+      "item6" : { "item6.1" : "value9", "item6.2" : "value10" },
+
+      "[...BY boolTrue]" : {
+        "#TRUE" : {
+          "item2" : "value2a",
+          "item3"        : ["value3a", "value4a"],
+          "item4 [*...]" : ["value5a", "value6a"],
+          "item5"        : { "item5.2" : "value9", "item5.2a" : "value10" },
+          "item6 [*...]" : { "item6.2" : "value11", "item6.2a" : "value12" }
+        },
+        "#FALSE" : {
+          "item2" : "value2b",
+          "item3"        : ["value3b", "value4b"],
+          "item4 [*...]" : ["value5b", "value6b"],
+          "item5"        : { "item5.2" : "value9b", "item5.2b" : "value10b" },
+          "item6 [*...]" : { "item6.1" : "value11b", "item6.2b" : "value12b" }
+        }
+      }
+    }
+  },
+
+  "TEST [...BY ] regExp" : {
+    "objectItem" : {
+      "item1" : "value1",
+
+      "[...BY rxItemBItemC]" : {
+        "itemA" : {
+          "item2" : "value2a"
+        },
+        "itemB" : {
+          "item3" : "value3a"
+        },
+        "itemC" : {
+          "item4" : "value4a"
+        }
+      }
     }
   }
 }
