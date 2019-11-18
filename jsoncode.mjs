@@ -13,6 +13,8 @@ const compTypes = {
 	'>=' : (a,b) => a >= b,
 	'<=' : (a,b) => a <= b,
 	'~'  : (a,b) => toUniversal(a) === toUniversal(b),
+	'E'  : (a,b) => b.includes(a),
+	'C'  : (a,b) => b.test(a)
 };
 
 const getStringValue = (_p, s) => {
@@ -21,11 +23,14 @@ const getStringValue = (_p, s) => {
 };
 
 const condTypes = {
-	1: (m, [_a])=>m?(_a.startsWith('!')?!m[_a.slice(1)]:m[_a]):true,
-	2: (m, [_a, _b], s)=>condTypes[3](m, [_a, '=', _b], s),
+	1: (m, [_a])=>_a.startsWith('!')?!m[_a.slice(1)]:m[_a],
+	2: (m, [_a, _b], s)=>condTypes[3](m, [_a, null, _b], s), //blind operation
 	3: (m, [_a, b, _c], s)=>{
 		let a = getStringValue(_a, s),
 			c = getStringValue(_c, s);
+
+		let aStr = false,
+			cStr = false;
 
 		if (!m) {
 			return true;
@@ -34,15 +39,20 @@ const condTypes = {
 		if (a === false) {
 			if (!Number.isNaN(Number.parseFloat(_a))) a = Number(_a);
 			else a = m[_a];
-		}
+		} else aStr = `'${a}'`;
 		if (c === false) {
 			if (!Number.isNaN(Number.parseFloat(_c))) c = Number(_c);
 			else c = m[_c];
-		}
+		} else cStr = `'${c}'`;
 
+		if (!b) {
+			if (c instanceof RegExp && typeof a === 'string') b = 'C';
+			else if (Array.isArray(c)) b = 'E';
+			else b = '=';
+		}
 		const operator = compTypes[b];
 		if (operator) return operator(a, c);
-		else throw `Unknown operator "${b}" in condition "${aName} ${b} ${c}"`;
+		else throw `Unknown operator "${b}" in condition "${aStr!==false?aStr:_a} ${b} ${cStr!==false?cStr:_c}"`;
 	}
 };
 
@@ -77,8 +87,26 @@ const parseLogicalExp = (cond, model) => {
 		total = total || local;
 	});
 
-	//if (simp) return simp;
 	return total;
+};
+
+const spread = (parsedItem, newNode) => {
+	if (typeof parsedItem !== 'object' || Array.isArray(parsedItem)) return false;
+
+	for (let [key, value] of Object.entries(parsedItem)) {
+		if (key.endsWith(' [*...]') || key.endsWith(' [!...]') && typeof value === 'object') {
+			let realKey = key.slice(0, -' [*...]'.length);
+			if (Array.isArray(value)) {
+				if (key.endsWith(' [!...]') && newNode[realKey]) for (let item of value) {
+					if (!newNode[realKey].includes(item)) newNode[realKey].push(item);
+				}
+				else newNode[realKey] = [...(newNode[realKey]||[]), ...value];
+			} else {
+				newNode[realKey] = {...(newNode[realKey]||{}), ...value};
+			}
+		} else newNode[key] = value;
+	}
+	return true;
 };
 
 const parseItem = (node, model) => {
@@ -91,7 +119,6 @@ const parseItem = (node, model) => {
 		if (key.endsWith(']')) {
 			const pureIF = key.startsWith('[IF ');
 			const spreadIF = key.startsWith('[...IF ');
-
 			if (key.includes(' [IF ') || pureIF || spreadIF) {
 				let
 					newKey = key,
@@ -107,64 +134,70 @@ const parseItem = (node, model) => {
 
 				if (isTrue) {
 					const parsedItem = parseItem(node[key], model);
-					if (spreadIF && typeof parsedItem === 'object' && !Array.isArray(parsedItem)) {
-						for (let [key, value] of Object.entries(parsedItem)) {
-							if (key.endsWith(' [*...]') || key.endsWith(' [!...]') && typeof value === 'object') {
-								let realKey = key.slice(0, -' [*...]'.length);
-								if (Array.isArray(value)) {
-									if (key.endsWith(' [!...]') && newNode[realKey]) for (let item of value) {
-										if (!newNode[realKey].includes(item)) newNode[realKey].push(item);
-									}
-									else newNode[realKey] = [...(newNode[realKey]||[]), ...value];
-								} else {
-									newNode[realKey] = {...(newNode[realKey]||{}), ...value};
-								}
-							} else newNode[key] = value;
-						}
-					} else newNode[newKey] = parsedItem;
+					if (!spreadIF || !spread(parsedItem, newNode)) newNode[newKey] = parsedItem;
 				}
 
 				continue;
 			}
 
-			//const pureBY   = key.startsWith('[BY ');
+			const arrayBY  = key.includes(' [*BY ');
 			const spreadBY = key.startsWith('[...BY ');
-			if (key.includes(' [BY ') || spreadBY) {
+			if (key.includes(' [BY ') || spreadBY || arrayBY) {
 				let newKey = key, caseline;
 
-				if (spreadBY) caseline  = key.slice('[...BY '.length, -1);
-				else [newKey, caseline] = key.slice(0, -1).split(' [BY ');
+				if (spreadBY)     caseline           = key.slice('[...BY '.length, -1);
+				else if (arrayBY) [newKey, caseline] = key.slice(0, -1).split(' [*BY ');
+				else              [newKey, caseline] = key.slice(0, -1).split(' [BY ');
 
 				newKey = newKey.trim();
 				caseline = caseline.trim();
 
 				caseline = caseline.split(', ');
 				let selectedCase = node[key];
+				const selectedCases = [];
 
-				for (let casename of caseline) {
-					let casevalue = model[casename.trim()];
+				if (arrayBY) {
+					let casevalue = parseLogicalExp(caseline[0].trim(), model);
+					if (casevalue instanceof RegExp) {
+						for (let [caseKey,value] of Object.entries(selectedCase)) {
+							if (casevalue.test(caseKey)) selectedCases.push(value);
+						}
+					} else if (Array.isArray(casevalue)) {
+						for (let [caseKey, value] of Object.entries(selectedCase)) {
+							if (casevalue.includes(caseKey)) selectedCases.push(value);
+						}
+					}
+				} else for (let casename of caseline) {
+					let casevalue = parseLogicalExp(casename.trim(), model);
+					if (spreadBY && caseline.length === 1) {
+						if (casevalue instanceof RegExp) {
+							for (let [caseKey, value] of Object.entries(selectedCase)) {
+								if (casevalue.test(caseKey)) selectedCases.push(value);
+							}
+						} else if (Array.isArray(casevalue)) {
+							for (let [caseKey, value] of Object.entries(selectedCase)) {
+								if (casevalue.includes(caseKey)) selectedCases.push(value);
+							}
+						}
+					}
 					if (typeof casevalue === 'boolean') {
 						casevalue = casevalue ? '#TRUE' : '#FALSE';
 					}
 					selectedCase = selectedCase[casevalue] || selectedCase['#DEFAULT'];
 				}
-				if (selectedCase !== undefined) {
-					const parsedItem = parseItem(selectedCase, model);
-					if (spreadBY && typeof parsedItem === 'object' && !Array.isArray(parsedItem)) {
-						for (let [key, value] of Object.entries(parsedItem)) {
-							if (key.endsWith(' [*...]') || key.endsWith(' [!...]') && typeof value === 'object') {
-								let realKey = key.slice(0, -' [*...]'.length);
-								if (Array.isArray(value)) {
-									if (key.endsWith(' [!...]') && newNode[realKey]) for (let item of value) {
-										if (!newNode[realKey].includes(item)) newNode[realKey].push(item);
-									}
-									else newNode[realKey] = [...(newNode[realKey]||[]), ...value];
-								} else {
-									newNode[realKey] = {...(newNode[realKey]||{}), ...value};
-								}
-							} else newNode[key] = value;
-						}
-					} else newNode[newKey] = parsedItem;
+
+				if (spreadBY && selectedCases.length > 0) for (let sc of selectedCases) {
+					const parsedItem = parseItem(sc, model);
+					if (spreadBY) spread(parsedItem, newNode);
+					else newNode[newKey] = parsedItem;
+				}
+				else {
+					if (arrayBY && selectedCases.length > 0) selectedCase = selectedCases;
+					if (selectedCase !== undefined) {
+						const parsedItem = parseItem(selectedCase, model);
+						if (spreadBY) spread(parsedItem, newNode);
+						else newNode[newKey] = parsedItem;
+					}
 				}
 
 				continue;

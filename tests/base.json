@@ -18,12 +18,21 @@
   },
 
   "TEST 1BX" : {
-    "item7X [IF stringAlpha2 = 'alpha & itsString = @']" : "4a",
-    "item8X [IF stringAlpha2 = 'beta & itsString = @']"  : "4b",
-    "item7bX [IF stringAlpha2 'alpha & itsString = @']"  : "4aa",
-    "item8bX [IF stringAlpha2 'beta & itsString = @']"   : "4bb",
+    "item7X  [IF stringAlpha2 =  'alpha & itsString = @']" : "4a",
+    "item8X  [IF stringAlpha2 =  'beta  & itsString = @']" : "4b",
+    "item7bX [IF stringAlpha2    'alpha & itsString = @']" : "4aa",
+    "item8bX [IF stringAlpha2    'beta  & itsString = @']" : "4bb",
     "item7cX [IF stringAlpha2 != 'alpha & itsString = @']" : "4ca",
-    "item8cX [IF stringAlpha2 != 'beta & itsString = @']"  : "4cb"
+    "item8cX [IF stringAlpha2 != 'beta  & itsString = @']" : "4cb"
+  },
+
+  "TEST 1RX" : {
+    "item1 [IF 'itemA' C rxItemBItemC]" : "value 1",
+    "item2 [IF 'itemB' C rxItemBItemC]" : "value 2",
+    "item3 [IF 'itemC' C rxItemBItemC]" : "value 3",
+    "item4 [IF 'itemA' rxItemBItemC]" : "value 4",
+    "item5 [IF 'itemB' rxItemBItemC]" : "value 5",
+    "item6 [IF 'itemC' rxItemBItemC]" : "value 6"
   },
 
   "TEST 1C" : {
@@ -73,16 +82,20 @@
       "#FALSE" : "1b"
     },
     "item2 [BY boolFalse]" : {
-      "#TRUE"  : "2a",
+      "#TRUE" : "2a",
       "#FALSE" : "2b"
     },
-    "item3 [BY undef]" : {
-      "#TRUE"    : "3a",
-      "#FALSE"   : "3b",
+    "item3 [BY stringAlpha = 'alpha']" : {
+      "#TRUE" : "2a",
+      "#FALSE" : "2b"
+    },
+    "item4 [BY undef]" : {
+      "#TRUE" : "3a",
+      "#FALSE" : "3b",
       "#DEFAULT" : "3c"
     },
-    "item4 [BY boolFalse]" : {
-      "#TRUE"    : "4a",
+    "item5 [BY boolFalse]" : {
+      "#TRUE" : "4a",
       "#DEFAULT" : "4b"
     }
   },
@@ -105,10 +118,18 @@
   },
 
   "TEST 3B" : {
-    "item1 [BY rxItemBItemC]" : {
+    "item1 [*BY rxItemBItemC]" : {
       "itemA" : "1a",
       "itemB" : "1b",
       "itemC" : "1c"
+    }
+  },
+
+  "TEST 3C" : {
+    "item1 [*BY arrayBetaGamma]" : {
+      "alpha" : "1a",
+      "beta"  : "1b",
+      "gamma" : "1c"
     }
   },
 
@@ -307,20 +328,31 @@
   },
 
   "TEST [...BY ] regExp" : {
-    "objectItem" : {
-      "item1" : "value1",
+    "item1" : "value 1",
 
-      "[...BY rxItemBItemC]" : {
-        "itemA" : {
-          "item2" : "value2a"
-        },
-        "itemB" : {
-          "item3" : "value3a"
-        },
-        "itemC" : {
-          "item4" : "value4a"
-        }
-      }
+    "[...BY rxItemBItemC]" : {
+      "itemA" : { "item2" : "value 2" },
+      "itemB" : { "item3" : "value 3" },
+      "itemC" : { "item4" : "value 4" }
     }
+  },
+
+  "TEST [...BY ] array" : {
+    "item1" : "value 1",
+
+    "[...BY arrayBetaGamma]" : {
+      "alpha" : { "item2" : "value 2" },
+      "beta"  : { "item3" : "value 3" },
+      "gamma" : { "item4" : "value 4" }
+    }
+  },
+
+  "TEST E" : {
+    "item1 [IF 'alpha' E arrayBetaGamma]" : "value 1",
+    "item2 [IF 'beta'  E arrayBetaGamma]" : "value 2",
+    "item3 [IF 'gamma' E arrayBetaGamma]" : "value 3",
+    "item4 [IF 'alpha' arrayBetaGamma]"   : "value 4",
+    "item5 [IF 'beta'  arrayBetaGamma]"   : "value 5",
+    "item6 [IF 'gamma' arrayBetaGamma]"   : "value 6"
   }
 }

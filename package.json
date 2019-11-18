@@ -1,6 +1,6 @@
 {
   "name": "jsoncode",
-  "version": "1.4.0-dev",
+  "version": "1.4.1",
   "description": "JSON with conditional statements",
   "author": "Artem Varshavin",
   "license": "MIT",

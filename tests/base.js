@@ -9,7 +9,8 @@ const resultTree = jsoncode(tests, {
 	stringBeta  : "beta",
 	int10       : 10,
 	stringAlpha2: "alpha & itsString = @",
-	rxItemAItemB: /^(itemA|itemB)$/
+	rxItemBItemC: /^(itemB|itemC)$/,
+	arrayBetaGamma: ['beta', 'gamma']
 });
 
 test('JSONCode: TEST 1', () => {
@@ -36,6 +37,15 @@ test('JSONCode: TEST 1BX', () => {
 	});
 });
 
+test('JSONCode: TEST 1RX', () => {
+	expect(resultTree["TEST 1RX"]).toEqual({
+		"item2":"value 2",
+		"item3":"value 3",
+		"item5":"value 5",
+		"item6":"value 6"
+	});
+});
+
 test('JSONCode: TEST 1C', () => {
 	expect(resultTree["TEST 1C"]).toEqual({
 		"item10":"5b",
@@ -59,8 +69,9 @@ test('JSONCode: TEST 2', () => {
 	expect(resultTree["TEST 2"]).toEqual({
 		"item1":"1a",
 		"item2":"2b",
-		"item3":"3c",
-		"item4":"4b"
+		"item3":"2a",
+		"item4":"3c",
+		"item5":"4b"
 	});
 });
 
@@ -73,7 +84,13 @@ test('JSONCode: TEST 3', () => {
 
 test('JSONCode: TEST 3B', () => {
 	expect(resultTree["TEST 3B"]).toEqual({
-		"item1":["1b", "1c"]
+		"item1": ["1b", "1c"],
+	});
+});
+
+test('JSONCode: TEST 3C', () => {
+	expect(resultTree["TEST 3C"]).toEqual({
+		"item1": ["1b", "1c"],
 	});
 });
 
@@ -186,10 +203,25 @@ test('JSONCode: TEST By Spread', () => {
 
 test('JSONCode: TEST By regExp', () => {
 	expect(resultTree["TEST [...BY ] regExp"]).toEqual({
-		"objectItem" : {
-			"item1" : "value1",
-			"item3" : "value3a",
-			"item4" : "value4a"
-		}
+		"item1" : "value 1",
+		"item3" : "value 3",
+		"item4" : "value 4"
+	});
+});
+
+test('JSONCode: TEST By array', () => {
+	expect(resultTree["TEST [...BY ] array"]).toEqual({
+		"item1" : "value 1",
+		"item3" : "value 3",
+		"item4" : "value 4"
+	});
+});
+
+test('JSONCode: TEST E', () => {
+	expect(resultTree["TEST E"]).toEqual({
+		"item2" : "value 2",
+		"item3" : "value 3",
+		"item5" : "value 5",
+		"item6" : "value 6"
 	});
 });

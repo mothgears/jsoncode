@@ -101,9 +101,11 @@ Animals food { 'In stock': '90 kg' }
 | `<` | Less than |
 | `>=` | Greater than or equal to |
 | `<=` | Less than or equal to |
+| `E` | Is an element of |
+| `C` | Is match regEx |
 
 #### Existence operator `[IF ]`
-If condition is false, item removes from tree
+If condition is false, item will be removed from tree
 ```js
 const myJsonObject = {
     "Element 1 [IF myVariable > 0]" : "some content 1", 
@@ -118,7 +120,7 @@ console.log(result);
 ```
 
 #### Switch operator `[BY ]`
-It selects value of node by user selector
+This operator selects value of node by string.
 ```js
 const myJsonObject = {
     "Selected value [BY mySelector]" : {
@@ -131,22 +133,6 @@ const result = jsoncode(myJsonObject, {mySelector: 'item 2'});
 console.log(result);
  
 //{"Selected value": "some content 2"}
-```
-
-Using regExp
-```js
-const myJsonObject = {
-    "Selected value [BY mySelector]" : {
-        "item 1" : "some content 1",
-        "item 2" : "some content 2",
-        "item 3" : "some content 3"
-    }, 
-};
-
-const result = jsoncode(myJsonObject, {mySelector: /^(item 2|item 3)$/});
-console.log(result);
- 
-//{"Selected value": ["some content 2", "some content 3"]}
 ```
 
 **Default case**
@@ -201,7 +187,30 @@ console.log(result);
 //{"Selected value" : "some content 2 A"}
 ```
 
+#### Filter operator `[*BY ]`
+This operator filters values of node by string, regEx or array.
+```js
+const myJsonObject = {
+    "Selected values [*BY mySelector]" : {
+        "item 1" : "some content 1",
+        "item 2" : "some content 2",
+        "item 3" : "some content 3"
+    }, 
+};
+
+const result1 = jsoncode(myJsonObject, {mySelector: /^(item 1|item 2)$/});
+console.log(result1);
+
+//{"Selected values": ["some content 1", "some content 2"]}
+
+const result2 = jsoncode(myJsonObject, {mySelector: ['item 2', 'item 3']});
+console.log(result2);
+
+//{"Selected values": ["some content 2", "some content 3"]}
+```
+
 #### Object to array operator `[AS ARRAY]`
+This operator convert object with conditions to result array.
 ```js
 const myJsonObject = {
     "Its Array [AS ARRAY]" : {  
@@ -220,6 +229,7 @@ console.log(result);
 
 ####Spread and combine operators `[...IF ]`, `[...BY ]`, `[...]`, `[*...]`
 ####`[...IF ]`
+If condition is false, item will be removed from tree, else added into parent object.
 ```js
 const myJsonObject = {
     "Its Object" : {
@@ -264,6 +274,7 @@ console.log(result);
 */
 ```
 ####`[...BY ]`
+This operator filters values of node by string, regEx or array and puts selected items into parent object.
 ```js
 const myJsonObject = {
     "item1" : "some content 1", 
