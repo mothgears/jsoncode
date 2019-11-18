@@ -227,8 +227,8 @@ console.log(result);
 //{"Its Array": ["some content 0", "some content 1", "some content 2"]}
 ```
 
-####Spread and combine operators `[...IF ]`, `[...BY ]`, `[...]`, `[*...]`
-####`[...IF ]`
+#### Spread and combine operators
+#### `[...IF ]`, `[...]`, `[*...]`
 If condition is false, item will be removed from tree, else added into parent object.
 ```js
 const myJsonObject = {
@@ -273,7 +273,8 @@ console.log(result);
 }
 */
 ```
-####`[...BY ]`
+
+#### `[...BY ]`
 This operator filters values of node by string, regEx or array and puts selected items into parent object.
 ```js
 const myJsonObject = {
