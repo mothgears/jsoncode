@@ -101,7 +101,7 @@ Animals food { 'In stock': '90 kg' }
 | `<` | Less than |
 | `>=` | Greater than or equal to |
 | `<=` | Less than or equal to |
-| `E` | Is an element of |
+| `E` | Is an element of (array) |
 | `C` | Is match regEx |
 
 #### Existence operator `[IF ]`

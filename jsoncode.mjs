@@ -56,6 +56,19 @@ const condTypes = {
 	}
 };
 
+const getStrings = (cond) => {
+	let condStrings = cond.split(`'`);
+	cond = [];
+	for (let i = 0; i < condStrings.length; i++) {
+		if (i % 2) cond.push(i);
+		else cond.push(condStrings[i]);
+	}
+	return [
+		cond.join(`'`),
+		condStrings
+	];
+};
+
 const parseLogicalExp = (cond, model) => {
 	if (!model) return true;
 
@@ -63,13 +76,8 @@ const parseLogicalExp = (cond, model) => {
 
 	let total = false;
 
-	let condStrings = cond.split(`'`);
-	cond = [];
-	for (let i = 0; i < condStrings.length; i++) {
-		if (i % 2) cond.push(i);
-		else cond.push(condStrings[i]);
-	}
-	cond = cond.join(`'`);
+	let condStrings;
+	[cond, condStrings] = getStrings(cond);
 
 	if (cond.includes('||')) throw `Unknown operator "||", maybe you mean "or" operator: "|" ?`;
 	if (cond.includes('&&')) throw `Unknown operator "&&", maybe you mean "and" operator: "&" ?`;
@@ -220,68 +228,98 @@ const parseItem = (node, model) => {
 	return newNode;
 };
 
-//SELECTRS
-const combineRx = (...rxArr) => {
-	let delim = rxArr[rxArr.length-1];
-	if (typeof delim === 'string') rxArr.pop();
-	else delim = '';
-	return new RegExp(rxArr.map(rx=>rx.source).join(delim));
-};
+class Jsoncode {
+	constructor(src) { this._source = src; }
 
-const expressions = {
-	'[...IF' : {rx: /^\[\.\.\.IF/, type: 'IF'},
-	'[IF'    : {rx: /\[IF/, type: 'IF'},
-	'[BY'    : {rx: /\[BY/, type: 'BY'},
-};
-
-const simpleSelect = (node, rx) => {
-	if (typeof rx === 'string') {
-		let startToken = rx.split(' ')[0];
-		let { rx:startRx, type } = expressions[startToken];
-		if (type) {
-			const rxs = [];
-			for (let token of rx.slice(startToken.length, -1).trim().replace(/ +/g, ' ').split(type === 'BY'?',':' ')) {
-				token = token.trim();
-				if      (token ===  '@') rxs.push(/\s+([A-Za-z_]\S*)/);
-				else if (token === '#@') rxs.push(/\s+([0-9]\S*)/);
-				else if (token === '*@') rxs.push(/\s+'(.+)'/);
-				else rxs.push(new RegExp(`\\s+${token}`));
+	static _selectKeysOfNode (rx, node, keys) {
+		keys = keys || [];
+		if (Array.isArray(node)) {
+			for (let value of node) Jsoncode._selectKeysOfNode(rx, value, keys);
+		} else {
+			for (let [key, value] of Object.entries(node)) {
+				const result = key.match(rx);
+				if (result) {
+					keys.push({
+						operator: result[1],
+						condition: result[2].trim(),
+						value: value
+					});
+				}
+				if (typeof value === 'object') Jsoncode._selectKeysOfNode(rx, value, keys);
 			}
-			rx = combineRx(startRx, combineRx(...rxs, ...type==='BY'?['\\s*,']:[]), /\s*]$/);
-		} else return [];
-	}
-
-	const selected = [];
-	for (let [key, value] of Object.entries(node)) {
-		const result = key.match(rx);
-		if (result) {
-			const r = {key, value};
-			if (Array.isArray(result)) r.group = result.slice(1);
-			selected.push(r);
 		}
+		return keys;
 	}
 
-	return selected;
-};
-
-const select = (node, rxline) => {
-	let selected = [{ value: node }];
-	while (rxline.length > 0) {
-		let rx = rxline.shift();
-		let tmpSelected = [];
-		for (let selectedNode of selected) {
-			tmpSelected = [ ...tmpSelected, ...simpleSelect(selectedNode.value, rx) ];
+	static _parseBinaryExp (exp, propname, strings) {
+		exp = exp.trim().replace(/ +/g, ' ').split(' ');
+		if (exp.length === 3) exp = [exp[0], exp[2]];
+		const index = exp.indexOf(propname);
+		if (index >= 0) {
+			let value = exp[1-index];
+			if (value.startsWith(`'`)) value = strings[value.slice(1,-1)];
+			return value;
 		}
-		selected = tmpSelected;
-		if (rxline.length === 0) return selected;
+		return undefined;
 	}
-	return [];
-};
+
+	get source () { return this._source; }
+
+	selectValues (propname) {
+		const rx     = new RegExp(`.*\\[(IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]*${propname}[^\\]]*)]`);
+		const keys   = Jsoncode._selectKeysOfNode(rx, this._source);
+		const values = [];
+
+		for (let key of keys) {
+			if (['IF', '...IF'].includes(key.operator)) {
+				let [condition, strings] = getStrings(key.condition);
+				condition = condition.split(/ \| | & /);
+				for (let exp of condition) {
+					const value = Jsoncode._parseBinaryExp(exp, propname, strings);
+					if (value !== undefined) values.push(value);
+				}
+			}
+			if (['BY', '*BY', '...BY'].includes(key.operator)) {
+				let [condition, strings] = getStrings(key.condition);
+				let conditions = condition.split(',').map(exp=>exp.trim());
+				let targetCondition = null;
+				let targetNodes = [key.value];
+				while (!targetCondition && conditions.length > 0) {
+					const exp = conditions.shift();
+					if (exp.includes(' ')) {
+						const value = Jsoncode._parseBinaryExp(exp, propname, strings);
+						if (value !== undefined) {
+							targetCondition = true;
+							values.push(value);
+						}
+					} else {
+						if (exp === propname) {
+							targetNodes.forEach(
+								node => Object.keys(node).forEach(key=>values.push(key))
+							);
+							targetCondition = true;
+						} else {
+							targetNodes = targetNodes.reduce(
+								(newNodes, node)=>[ ...newNodes, ...Object.values(node) ],
+								[]
+							);
+						}
+					}
+				}
+			}
+		}
+
+		return values;
+	}
+}
+
+const _jcCache = {};
 
 const jsoncode = (src, model = null)=> {
 	if (model) return parseItem(src, model);
-	else return {
-		select: (...rxline) => select(src, rxline),
+	else {
+		if (_jcCache[src]) return _jcCache[src];
+		else return _jcCache[src] = new Jsoncode(src);
 	}
 };
 if (typeof JSON !== 'undefined') JSON.specify = jsoncode;
