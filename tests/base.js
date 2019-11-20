@@ -8,10 +8,13 @@ const resultTree = jsoncode(tests, {
 	stringAlpha : "alpha",
 	stringBeta  : "beta",
 	int10       : 10,
+	string10    : '10',
 	stringAlpha2: "alpha & itsString = @",
 	rxItemBItemC: /^(itemB|itemC)$/,
 	arrayBetaGamma: ['beta', 'gamma']
 });
+
+const jcTree = jsoncode(tests);
 
 test('JSONCode: TEST 1', () => {
 	expect(resultTree["TEST 1"]).toEqual({
@@ -29,6 +32,17 @@ test('JSONCode: TEST 1B', () => {
 	});
 });
 
+test('JSONCode: TEST Equals', () => {
+	expect(resultTree["TEST Equals"]).toEqual({
+		"item1":"value 1",
+		"item7":"value 7",
+		"item9":"value 9",
+		"item11":"value 11",
+		"item13":"value 13",
+		"item15":"value 15",
+	});
+});
+
 test('JSONCode: TEST 1BX', () => {
 	expect(resultTree["TEST 1BX"]).toEqual({
 		"item7X":"4a",
@@ -43,6 +57,12 @@ test('JSONCode: TEST 1RX', () => {
 		"item3":"value 3",
 		"item5":"value 5",
 		"item6":"value 6"
+	});
+});
+
+test('JSONCode: TEST 1RXS', () => {
+	expect(resultTree["TEST 1RXS"]).toEqual({
+		"item1":"value 1",
 	});
 });
 
@@ -69,9 +89,10 @@ test('JSONCode: TEST 2', () => {
 	expect(resultTree["TEST 2"]).toEqual({
 		"item1":"1a",
 		"item2":"2b",
-		"item3":"2a",
-		"item4":"3c",
-		"item5":"4b"
+		"item3":"3a",
+		"item4":"4b",
+		"item5":"5b",
+		"item6":"6b"
 	});
 });
 
@@ -224,4 +245,16 @@ test('JSONCode: TEST E', () => {
 		"item5" : "value 5",
 		"item6" : "value 6"
 	});
+});
+
+test('JSONCode: TEST valuesSelector', () => {
+	expect(jcTree.getValuesOf('prop1')).toEqual(['valStr1a', 'valStr1c']);
+	expect(jcTree.getValuesOf('prop2')).toEqual(['valStr2a', 'valStr2c']);
+	expect(jcTree.getValuesOf('prop3')).toEqual(['valStr3a', 'valStr3c']);
+	expect(jcTree.getValuesOf('prop4')).toEqual(['valStr4a', 'valStr4c']);
+	expect(jcTree.getValuesOf('prop5')).toEqual(['valStr5a', 'valStr5b', 'valStr5c', 'valStr5c_1a', 'valStr5c_1b']);
+	expect(jcTree.getValuesOf('prop6')).toEqual(['valStr6a', 'valStr6b', 'valStr6c', 'valStr6c_1a', 'valStr6c_1b']);
+	expect(jcTree.getValuesOf('prop7')).toEqual(['valStr7a', 'valStr7b', 'valStr7c', 'valStr7c_1a', 'valStr7c_1b']);
+	expect(jcTree.getValuesOf('prop8')).toEqual(['valStr8a', 'valStr8b', 'valStr8c', 'valStr8d', 'valStr8e']);
+	expect(jcTree.getValuesOf('prop9')).toEqual([17, 20]);
 });

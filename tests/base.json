@@ -17,6 +17,25 @@
     "item8c [IF stringAlpha != 'beta' ]" : "4cb"
   },
 
+  "TEST Equals" : {
+    "item1  [IF int10    =  10 ]" : "value 1",
+    "item2  [IF int10    =   7 ]" : "value 2",
+    "item3  [IF int10    = '10']" : "value 3",
+    "item4  [IF int10    =  '7']" : "value 4",
+    "item5  [IF string10 =  10 ]" : "value 5",
+    "item6  [IF string10 =   7 ]" : "value 6",
+    "item7  [IF string10 = '10']" : "value 7",
+    "item8  [IF string10 =  '7']" : "value 8",
+    "item9  [IF int10    ~  10 ]" : "value 9",
+    "item10 [IF int10    ~   7 ]" : "value 10",
+    "item11 [IF int10    ~ '10']" : "value 11",
+    "item12 [IF int10    ~  '7']" : "value 12",
+    "item13 [IF string10 ~  10 ]" : "value 13",
+    "item14 [IF string10 ~   7 ]" : "value 14",
+    "item15 [IF string10 ~ '10']" : "value 15",
+    "item16 [IF string10 ~  '7']" : "value 16"
+  },
+
   "TEST 1BX" : {
     "item7X  [IF stringAlpha2 =  'alpha & itsString = @']" : "4a",
     "item8X  [IF stringAlpha2 =  'beta  & itsString = @']" : "4b",
@@ -33,6 +52,12 @@
     "item4 [IF 'itemA' rxItemBItemC]" : "value 4",
     "item5 [IF 'itemB' rxItemBItemC]" : "value 5",
     "item6 [IF 'itemC' rxItemBItemC]" : "value 6"
+  },
+
+  "TEST 1RXS" : {
+    "item1 [IF stringAlpha C /^al.+/]" : "value 1",
+    "item2 [IF stringAlpha C /^be.+/]" : "value 2",
+    "item3 [IF stringAlpha C /al$/]"   : "value 3"
   },
 
   "TEST 1C" : {
@@ -86,17 +111,21 @@
       "#FALSE" : "2b"
     },
     "item3 [BY stringAlpha = 'alpha']" : {
-      "#TRUE" : "2a",
-      "#FALSE" : "2b"
+      "#TRUE" : "3a",
+      "#FALSE" : "3b"
     },
     "item4 [BY undef]" : {
-      "#TRUE" : "3a",
-      "#FALSE" : "3b",
-      "#DEFAULT" : "3c"
-    },
-    "item5 [BY boolFalse]" : {
       "#TRUE" : "4a",
-      "#DEFAULT" : "4b"
+      "#FALSE" : "4b",
+      "#DEFAULT" : "4c"
+    },
+    "item5 [BY undef]" : {
+      "#TRUE" : "5a",
+      "#DEFAULT" : "5b"
+    },
+    "item6 [BY boolFalse]" : {
+      "#TRUE" : "6a",
+      "#DEFAULT" : "6b"
     }
   },
 
@@ -354,5 +383,99 @@
     "item4 [IF 'alpha' arrayBetaGamma]"   : "value 4",
     "item5 [IF 'beta'  arrayBetaGamma]"   : "value 5",
     "item6 [IF 'gamma' arrayBetaGamma]"   : "value 6"
+  },
+
+  "TEST valuesSelector" : {
+    "item1 [IF 'valStr1a' E prop1]" : {
+      "item1_1 [IF 'valStr1b' E prop0]" : "value 1",
+      "item1_2 [IF 'valStr1c' E prop1]" : "value 2"
+    },
+    "item2 [IF 'valStr2a' prop2]" : {
+      "item2_1 [IF 'valStr2b' prop0]" : "value 1",
+      "item2_2 [IF 'valStr2c' prop2]" : "value 2"
+    },
+    "item3 [IF prop3 'valStr3a']" : {
+      "item3_1 [IF prop0 'valStr3b']" : "value 1",
+      "item3_2 [IF prop3 'valStr3c']" : "value 2"
+    },
+    "item4 [...IF prop4 'valStr4a']" : {
+      "item4_1": {
+        "item4_1_1 [...IF prop0 'valStr4b']" : "value 1",
+        "item4_1_2 [...IF prop4 'valStr4c']" : "value 2"
+      }
+    },
+    "item5 [BY prop5]" : {
+      "valStr5a": "value 1",
+      "valStr5b": {
+        "item5b_0": "value 0",
+        "item5b_1 [BY prop0]" : {
+          "valStr5b_1a": "value 1",
+          "valStr5b_1b": "value 2"
+        }
+      },
+      "valStr5c": {
+        "item5c_0": "value 0",
+        "item5c_1 [BY prop5]" : {
+          "valStr5c_1a": "value 1",
+          "valStr5c_1b": "value 2"
+        }
+      }
+    },
+    "item6 [...BY prop6]" : {
+      "valStr6a": "value 1",
+      "valStr6b": {
+        "item6b_0": "value 0",
+        "item6b_1 [...BY prop0]" : {
+          "valStr6b_1a": "value 1",
+          "valStr6b_1b": "value 2"
+        }
+      },
+      "valStr6c": {
+        "item6c_0": "value 0",
+        "item6c_1 [...BY prop6]" : {
+          "valStr6c_1a": "value 1",
+          "valStr6c_1b": "value 2"
+        }
+      }
+    },
+    "item7 [*BY prop7]" : {
+      "valStr7a": "value 1",
+      "valStr7b": {
+        "item7b_0": "value 0",
+        "item7b_1 [*BY prop0]" : {
+          "valStr7b_1a": "value 1",
+          "valStr7b_1b": "value 2"
+        }
+      },
+      "valStr7c": {
+        "item7c_0": "value 0",
+        "item7c_1 [*BY prop7]" : {
+          "valStr7c_1a": "value 1",
+          "valStr7c_1b": "value 2"
+        }
+      }
+    },
+    "item8 [BY prop0, prop8]" : {
+      "valStr0a": {
+        "valStr8a": "value 11",
+        "valStr8b": "value 12",
+        "valStr8c": "value 13"
+      },
+      "valStr0b": {
+        "valStr8b": "value 22",
+        "valStr8c": "value 23",
+        "valStr8d": "value 23"
+      },
+      "valStr0c": {
+        "valStr8c": "value 31",
+        "valStr8d": "value 32",
+        "valStr8e": "value 33"
+      }
+    },
+
+    "item9 [IF prop9 > 17]" : {
+      "item9_1 [IF prop0 >= 15]" : "value 1",
+      "item9_2 [IF prop9  = 20]" : "value 2"
+    }
   }
 }

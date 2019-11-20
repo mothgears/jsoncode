@@ -13,12 +13,13 @@ const compTypes = {
 	'>=' : (a,b) => a >= b,
 	'<=' : (a,b) => a <= b,
 	'~'  : (a,b) => toUniversal(a) === toUniversal(b),
-	'E'  : (a,b) => b.includes(a),
-	'C'  : (a,b) => b.test(a)
+	'E'  : (a,b) => b?b.includes(a):false,
+	'C'  : (a,b) => b?b.test(a):false
 };
 
-const getStringValue = (_p, s) => {
-	if (_p.startsWith(`'`) && _p.endsWith(`'`)) return s ? s[Number(_p.slice(1, -1))].toString() : _p.slice(1, -1);
+const getStringOrRxValue = (_p, s) => {
+	if (_p.startsWith(`'`) && _p.endsWith(`'`)) return s ? s[_p].toString() : _p.slice(1, -1);
+	if (_p.startsWith(`/`) && _p.endsWith(`/`)) return new RegExp(s ? s[_p].toString() : _p.slice(1, -1));
 	return false;
 };
 
@@ -26,8 +27,8 @@ const condTypes = {
 	1: (m, [_a])=>_a.startsWith('!')?!m[_a.slice(1)]:m[_a],
 	2: (m, [_a, _b], s)=>condTypes[3](m, [_a, null, _b], s), //blind operation
 	3: (m, [_a, b, _c], s)=>{
-		let a = getStringValue(_a, s),
-			c = getStringValue(_c, s);
+		let a = getStringOrRxValue(_a, s),
+			c = getStringOrRxValue(_c, s);
 
 		let aStr = false,
 			cStr = false;
@@ -37,11 +38,13 @@ const condTypes = {
 		}
 
 		if (a === false) {
-			if (!Number.isNaN(Number.parseFloat(_a))) a = Number(_a);
+			const pf = Number.parseFloat(_a);
+			if (!Number.isNaN(pf)) a = pf;
 			else a = m[_a];
 		} else aStr = `'${a}'`;
 		if (c === false) {
-			if (!Number.isNaN(Number.parseFloat(_c))) c = Number(_c);
+			const pf = Number.parseFloat(_c);
+			if (!Number.isNaN(pf)) c = pf;
 			else c = m[_c];
 		} else cStr = `'${c}'`;
 
@@ -56,16 +59,30 @@ const condTypes = {
 	}
 };
 
-const getStrings = (cond) => {
+const getStringOrRx = (cond) => {
+	const stringsAndRxs = {};
+
 	let condStrings = cond.split(`'`);
 	cond = [];
 	for (let i = 0; i < condStrings.length; i++) {
-		if (i % 2) cond.push(i);
+		if (i % 2) {
+			cond.push(i);
+			stringsAndRxs[`'${i}'`] = condStrings[i];
+		}
 		else cond.push(condStrings[i]);
 	}
+	let condRegExps = cond.join(`'`).split(`/`);
+	cond = [];
+	for (let i = 0; i < condRegExps.length; i++) {
+		if (i % 2) {
+			cond.push(i);
+			stringsAndRxs[`/${i}/`] = condRegExps[i];
+		}
+		else cond.push(condRegExps[i]);
+	}
 	return [
-		cond.join(`'`),
-		condStrings
+		cond.join(`/`),
+		stringsAndRxs
 	];
 };
 
@@ -77,7 +94,7 @@ const parseLogicalExp = (cond, model) => {
 	let total = false;
 
 	let condStrings;
-	[cond, condStrings] = getStrings(cond);
+	[cond, condStrings] = getStringOrRx(cond);
 
 	if (cond.includes('||')) throw `Unknown operator "||", maybe you mean "or" operator: "|" ?`;
 	if (cond.includes('&&')) throw `Unknown operator "&&", maybe you mean "and" operator: "&" ?`;
@@ -188,10 +205,10 @@ const parseItem = (node, model) => {
 							}
 						}
 					}
-					if (typeof casevalue === 'boolean') {
+					if (typeof casevalue === 'boolean' || casevalue === null || casevalue === undefined) {
 						casevalue = casevalue ? '#TRUE' : '#FALSE';
 					}
-					selectedCase = selectedCase[casevalue] || selectedCase['#DEFAULT'];
+					if (selectedCase) selectedCase = selectedCase[casevalue] || selectedCase['#DEFAULT'];
 				}
 
 				if (spreadBY && selectedCases.length > 0) for (let sc of selectedCases) {
@@ -257,7 +274,12 @@ class Jsoncode {
 		const index = exp.indexOf(propname);
 		if (index >= 0) {
 			let value = exp[1-index];
-			if (value.startsWith(`'`)) value = strings[value.slice(1,-1)];
+			if (value.startsWith(`'`)) value = strings[value];
+			if (value.startsWith(`/`)) value = new RegExp(strings[value]);
+			else {
+				const pf = Number.parseFloat(value);
+				if (!Number.isNaN(pf)) value = pf;
+			}
 			return value;
 		}
 		return undefined;
@@ -265,22 +287,24 @@ class Jsoncode {
 
 	get source () { return this._source; }
 
-	selectValues (propname) {
+	specify (model) { return parseItem(this._source, model); }
+
+	getValuesOf (propname) {
 		const rx     = new RegExp(`.*\\[(IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]*${propname}[^\\]]*)]`);
 		const keys   = Jsoncode._selectKeysOfNode(rx, this._source);
-		const values = [];
+		const values = new Set;
 
 		for (let key of keys) {
 			if (['IF', '...IF'].includes(key.operator)) {
-				let [condition, strings] = getStrings(key.condition);
+				let [condition, strings] = getStringOrRx(key.condition);
 				condition = condition.split(/ \| | & /);
 				for (let exp of condition) {
 					const value = Jsoncode._parseBinaryExp(exp, propname, strings);
-					if (value !== undefined) values.push(value);
+					if (value !== undefined) values.add(value);
 				}
 			}
 			if (['BY', '*BY', '...BY'].includes(key.operator)) {
-				let [condition, strings] = getStrings(key.condition);
+				let [condition, strings] = getStringOrRx(key.condition);
 				let conditions = condition.split(',').map(exp=>exp.trim());
 				let targetCondition = null;
 				let targetNodes = [key.value];
@@ -290,12 +314,12 @@ class Jsoncode {
 						const value = Jsoncode._parseBinaryExp(exp, propname, strings);
 						if (value !== undefined) {
 							targetCondition = true;
-							values.push(value);
+							values.add(value);
 						}
 					} else {
 						if (exp === propname) {
 							targetNodes.forEach(
-								node => Object.keys(node).forEach(key=>values.push(key))
+								node => Object.keys(node).forEach(key=>values.add(key))
 							);
 							targetCondition = true;
 						} else {
@@ -309,7 +333,7 @@ class Jsoncode {
 			}
 		}
 
-		return values;
+		return Array.from(values);
 	}
 }
 
