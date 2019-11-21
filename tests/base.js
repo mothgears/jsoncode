@@ -14,7 +14,7 @@ const resultTree = jsoncode(tests, {
 	arrayBetaGamma: ['beta', 'gamma']
 });
 
-const jcTree = jsoncode(tests);
+const jcTree = jsoncode(tests['TEST selector']);
 
 test('JSONCode: TEST 1', () => {
 	expect(resultTree["TEST 1"]).toEqual({
@@ -247,6 +247,13 @@ test('JSONCode: TEST E', () => {
 	});
 });
 
+test('JSONCode: TEST paramsSelector', () => {
+	expect(jcTree.getParams().sort()).toEqual([
+		'prop0','prop1','prop10','prop10_1','prop11','prop12',
+		'prop2','prop3','prop4','prop5','prop6','prop7','prop8','prop9'
+	]);
+});
+
 test('JSONCode: TEST valuesSelector', () => {
 	expect(jcTree.getValuesOf('prop1')).toEqual(['valStr1a', 'valStr1c']);
 	expect(jcTree.getValuesOf('prop2')).toEqual(['valStr2a', 'valStr2c']);
@@ -257,4 +264,7 @@ test('JSONCode: TEST valuesSelector', () => {
 	expect(jcTree.getValuesOf('prop7')).toEqual(['valStr7a', 'valStr7b', 'valStr7c', 'valStr7c_1a', 'valStr7c_1b']);
 	expect(jcTree.getValuesOf('prop8')).toEqual(['valStr8a', 'valStr8b', 'valStr8c', 'valStr8d', 'valStr8e']);
 	expect(jcTree.getValuesOf('prop9')).toEqual([17, 20]);
+	expect(jcTree.getValuesOf('prop10')).toEqual([true, false]);
+	expect(jcTree.getValuesOf('prop11')).toEqual([true, false]);
+	expect(jcTree.getValuesOf('prop12')).toEqual([true, false]);
 });

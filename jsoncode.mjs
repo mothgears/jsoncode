@@ -268,58 +268,77 @@ class Jsoncode {
 		return keys;
 	}
 
-	static _parseBinaryExp (exp, propname, strings) {
+	static _parseBinaryExp (exp, strings, propname) {
 		exp = exp.trim().replace(/ +/g, ' ').split(' ');
 		if (exp.length === 3) exp = [exp[0], exp[2]];
-		const index = exp.indexOf(propname);
-		if (index >= 0) {
-			let value = exp[1-index];
-			if (value.startsWith(`'`)) value = strings[value];
-			if (value.startsWith(`/`)) value = new RegExp(strings[value]);
+
+		const params = [];
+		const values = [];
+
+		for (let token of exp) {
+			let value = undefined;
+			if      (token.startsWith(`'`)) value = strings[token];
+			else if (token.startsWith(`/`)) value = new RegExp(strings[token]);
 			else {
-				const pf = Number.parseFloat(value);
+				const pf = Number.parseFloat(token);
 				if (!Number.isNaN(pf)) value = pf;
 			}
-			return value;
+			if (value) values.push(value);
+			else       params.push(token);
 		}
-		return undefined;
+
+		if (propname) {
+			if (params.includes(propname)) return values;
+			else [];
+		} else return params;
 	}
 
 	get source () { return this._source; }
 
 	specify (model) { return parseItem(this._source, model); }
 
-	getValuesOf (propname) {
-		const rx     = new RegExp(`.*\\[(IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]*${propname}[^\\]]*)]`);
+	_getAll (rx, propname) {
 		const keys   = Jsoncode._selectKeysOfNode(rx, this._source);
-		const values = new Set;
+		const result = new Set;
 
 		for (let key of keys) {
 			if (['IF', '...IF'].includes(key.operator)) {
 				let [condition, strings] = getStringOrRx(key.condition);
 				condition = condition.split(/ \| | & /);
 				for (let exp of condition) {
-					const value = Jsoncode._parseBinaryExp(exp, propname, strings);
-					if (value !== undefined) values.add(value);
+					if (exp.includes(' ')) Jsoncode._parseBinaryExp(exp, strings, propname).forEach(p => result.add(p));
+					else if (propname) {
+						if (exp.startsWith('!')) exp = exp.slice(1);
+						if (propname === exp) {
+							result.add(true);
+							result.add(false);
+						}
+					} else {
+						result.add(exp.startsWith('!') ? exp.slice(1) : exp);
+					}
 				}
-			}
-			if (['BY', '*BY', '...BY'].includes(key.operator)) {
+			} else if (['BY', '*BY', '...BY'].includes(key.operator)) {
 				let [condition, strings] = getStringOrRx(key.condition);
 				let conditions = condition.split(',').map(exp=>exp.trim());
 				let targetCondition = null;
 				let targetNodes = [key.value];
 				while (!targetCondition && conditions.length > 0) {
-					const exp = conditions.shift();
+					let exp = conditions.shift();
 					if (exp.includes(' ')) {
-						const value = Jsoncode._parseBinaryExp(exp, propname, strings);
-						if (value !== undefined) {
-							targetCondition = true;
-							values.add(value);
+						const r = Jsoncode._parseBinaryExp(exp, strings, propname);
+						if (r.length > 0) {
+							if (propname) targetCondition = true;
+							r.forEach(p=>result.add(p));
 						}
-					} else {
+					} else if (propname) {
+						if (exp.startsWith('!')) exp = exp.slice(1);
 						if (exp === propname) {
 							targetNodes.forEach(
-								node => Object.keys(node).forEach(key=>values.add(key))
+								node => Object.keys(node).forEach(key=>{
+									if      (key === '#TRUE')    key = true;
+									else if (key === '#FALSE')   key = false;
+									if (key !== '#DEFAULT') result.add(key)
+								})
 							);
 							targetCondition = true;
 						} else {
@@ -328,12 +347,21 @@ class Jsoncode {
 								[]
 							);
 						}
-					}
+					} else result.add(exp.startsWith('!') ? exp.slice(1) : exp);
 				}
 			}
 		}
 
-		return Array.from(values);
+		return Array.from(result);
+	}
+
+	getParams () {
+		return this._getAll(new RegExp(`.*\\[(IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]+)]`))
+	}
+
+	getValuesOf (propname) {
+		if (!propname || typeof propname !== 'string') throw Error('"getValuesOf" : propname is not string!');
+		return this._getAll(new RegExp(`.*\\[(IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]*${propname}[^\\]]*)]`), propname);
 	}
 }
 
@@ -341,10 +369,7 @@ const _jcCache = {};
 
 const jsoncode = (src, model = null)=> {
 	if (model) return parseItem(src, model);
-	else {
-		if (_jcCache[src]) return _jcCache[src];
-		else return _jcCache[src] = new Jsoncode(src);
-	}
+	else       return new Jsoncode(src);
 };
 if (typeof JSON !== 'undefined') JSON.specify = jsoncode;
 export default jsoncode;

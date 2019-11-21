@@ -385,7 +385,7 @@
     "item6 [IF 'gamma' arrayBetaGamma]"   : "value 6"
   },
 
-  "TEST valuesSelector" : {
+  "TEST selector" : {
     "item1 [IF 'valStr1a' E prop1]" : {
       "item1_1 [IF 'valStr1b' E prop0]" : "value 1",
       "item1_2 [IF 'valStr1c' E prop1]" : "value 2"
@@ -453,7 +453,8 @@
           "valStr7c_1a": "value 1",
           "valStr7c_1b": "value 2"
         }
-      }
+      },
+      "#DEFAULT": "value 1"
     },
     "item8 [BY prop0, prop8]" : {
       "valStr0a": {
@@ -472,10 +473,32 @@
         "valStr8e": "value 33"
       }
     },
-
     "item9 [IF prop9 > 17]" : {
       "item9_1 [IF prop0 >= 15]" : "value 1",
       "item9_2 [IF prop9  = 20]" : "value 2"
+    },
+    "item10 [IF prop10]" : {
+      "item10_1 [IF !prop10_1]" : "value 1"
+    },
+    "item11 [BY prop0, prop11]" : {
+      "valStr0a": {
+        "#TRUE"  : "value 11",
+        "#FALSE" : "value 12"
+      },
+      "valStr0b": {
+        "#TRUE"  : "value 21",
+        "#FALSE" : "value 22"
+      }
+    },
+    "item12 [BY prop0, !prop12]" : {
+      "valStr0a": {
+        "#TRUE"  : "value 11",
+        "#FALSE" : "value 12"
+      },
+      "valStr0b": {
+        "#TRUE"  : "value 21",
+        "#FALSE" : "value 22"
+      }
     }
   }
 }

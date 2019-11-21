@@ -90,20 +90,22 @@ Animals food { 'In stock': '90 kg' }
 ```
 
 ## Manual
-
-| operator | meaning |
-| ---------|---------|
-| `&` | And |
-| <code>&#124;</code> | Or |
-| `=` | Strictly equal to |
-| `~` | Equal to |
-| `!=` | Not equal to |
-| `>` | Greater than |
-| `<` | Less than |
-| `>=` | Greater than or equal to |
-| `<=` | Less than or equal to |
-| `E` | Is an element of (array) |
-| `C` | Is match regEx |
+#### Logical and comparison operators
+| operator | meaning | example 
+| ---------|---------|---------
+| `&` | And | `[IF a & b]`
+| <code>&#124;</code> | Or | <code>[IF a &#124; b]</code>
+| `!` | Not | `[IF !a]`
+| `=` | Strictly equal to | `[IF a = 'str']`
+| `~` | Equal to | `[IF a ~ 'str']`
+| `!=` | Not equal to | `[IF a != 'str']`
+| `>` | Greater than | `[IF a > 10]`
+| `<` | Less than | `[IF a < 10]`
+| `>=` | Greater than or equal to | `[IF a >= 10]`
+| `<=` | Less than or equal to | `[IF a <= 10]`
+| `E` | Is an element of (array) | `[IF 'str' E a]`
+| `C` | Is match (regEx) | `[IF 'str' C a]`
+| Without operator | Interpreted as `=`, `E`, `C` depending on args type | `[IF "str" a]`
 
 #### Existence operator `[IF ]`
 If condition is false, item will be removed from tree
@@ -296,7 +298,6 @@ const myJsonObject = {
 
 const result = jsoncode(myJsonObject, {myVariable: 'variantA'});
 console.log(result);
-
 /*
 {
     "item1" : "some content 1",
@@ -310,5 +311,48 @@ console.log(result);
         "subItem3": "some content 3b"
     }
 }
+*/
+```
+
+#### Selectors
+**"getParams"**  
+Select properties from json
+```js
+const myJsonObject = {
+    "item1 [IF myProp1 = 'myString']": "value 1",
+    "item2 [BY myProp2]": {
+        "propVal1" : "value 2a",
+        "propVal2" : "value 2b"
+    }
+};
+
+const usingParams = jsoncode(myJsonObject).getParams()
+console( usingParams );
+/*
+    ['myProp1', 'myProp2']
+*/
+```
+
+**"getValuesOf"**  
+Select property values from json
+```js
+const myJsonObject = {
+    "item1 [IF myProp1 = 'myString']": "value 1",
+    "item2 [BY myProp2]": {
+        "propVal1" : "value 2a",
+        "propVal2" : "value 2b"
+    }
+};
+
+const myProp1Values = jsoncode(myJsonObject).getValuesOf('myProp1');
+console( myProp1Values );
+/*
+    ['myString']
+*/
+
+const myProp2Values = jsoncode(myJsonObject).getValuesOf('myProp2');
+console( myProp2Values );
+/*
+    ['propVal1', 'propVal2']
 */
 ```
