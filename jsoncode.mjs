@@ -365,8 +365,6 @@ class Jsoncode {
 	}
 }
 
-const _jcCache = {};
-
 const jsoncode = (src, model = null)=> {
 	if (model) return parseItem(src, model);
 	else       return new Jsoncode(src);
