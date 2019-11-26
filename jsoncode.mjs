@@ -115,28 +115,39 @@ const parseLogicalExp = (cond, model) => {
 	return total;
 };
 
-const spread = (parsedItem, newNode) => {
+const getShadowPath = (shadowPath, ...itemKeys) => itemKeys.reduce(
+	(r, itemKey)=>r + '/' +itemKey.replace(/\\/g, '\\\\').replace(/\//g, '\\/'),
+	shadowPath
+);
+
+const spread = (parsedItem, newNode, shadowPath, shadowIndex) => {
 	if (typeof parsedItem !== 'object' || Array.isArray(parsedItem)) return false;
 
 	for (let [key, value] of Object.entries(parsedItem)) {
-		if (key.endsWith(' [*...]') || key.endsWith(' [!...]') && typeof value === 'object') {
+		if (key.endsWith(' [*...]') || key.endsWith(' [~...]') && typeof value === 'object') {
 			let realKey = key.slice(0, -' [*...]'.length);
 			if (Array.isArray(value)) {
-				if (key.endsWith(' [!...]') && newNode[realKey]) for (let item of value) {
+				if (key.endsWith(' [~...]') && newNode[realKey]) for (let item of value) {
 					if (!newNode[realKey].includes(item)) newNode[realKey].push(item);
 				}
 				else newNode[realKey] = [...(newNode[realKey]||[]), ...value];
-			} else {
-				newNode[realKey] = {...(newNode[realKey]||{}), ...value};
+			} else for (let subKey of Object.keys(value)) {
+				const itemShadowPath = getShadowPath(shadowPath, realKey, subKey);
+				const shadowItem = shadowIndex[itemShadowPath];
+				if (!shadowItem || !shadowItem.important) newNode[realKey][subKey] = value[subKey];
 			}
-		} else newNode[key] = value;
+		} else {
+			const itemShadowPath = getShadowPath(shadowPath, key);
+			const shadowItem = shadowIndex[itemShadowPath];
+			if (!shadowItem || !shadowItem.important) newNode[key] = value;
+		}
 	}
 	return true;
 };
 
-const parseItem = (node, model) => {
+const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 	if (typeof node !== 'object') return node;
-	if (Array.isArray(node))      return node.map(item=>parseItem(item, model));
+	if (Array.isArray(node))      return node.map(item=>parseItem(item, model, shadowPath, shadowIndex));
 
 	const newNode = {};
 	const keys = Object.keys(node);
@@ -158,8 +169,8 @@ const parseItem = (node, model) => {
 				const isTrue = parseLogicalExp(cond, model);
 
 				if (isTrue) {
-					const parsedItem = parseItem(node[key], model);
-					if (!spreadIF || !spread(parsedItem, newNode)) newNode[newKey] = parsedItem;
+					const parsedItem = parseItem(node[key], model, getShadowPath(shadowPath, newKey), shadowIndex);
+					if (!spreadIF || !spread(parsedItem, newNode, shadowPath, shadowIndex)) newNode[newKey] = parsedItem;
 				}
 
 				continue;
@@ -212,15 +223,15 @@ const parseItem = (node, model) => {
 				}
 
 				if (spreadBY && selectedCases.length > 0) for (let sc of selectedCases) {
-					const parsedItem = parseItem(sc, model);
-					if (spreadBY) spread(parsedItem, newNode);
+					const parsedItem = parseItem(sc, model, getShadowPath(shadowPath, newKey), shadowIndex);
+					if (spreadBY) spread(parsedItem, newNode, shadowPath, shadowIndex);
 					else newNode[newKey] = parsedItem;
 				}
 				else {
 					if (arrayBY && selectedCases.length > 0) selectedCase = selectedCases;
 					if (selectedCase !== undefined) {
-						const parsedItem = parseItem(selectedCase, model);
-						if (spreadBY) spread(parsedItem, newNode);
+						const parsedItem = parseItem(selectedCase, model, getShadowPath(shadowPath, newKey), shadowIndex);
+						if (spreadBY) spread(parsedItem, newNode, shadowPath, shadowIndex);
 						else newNode[newKey] = parsedItem;
 					}
 				}
@@ -230,7 +241,7 @@ const parseItem = (node, model) => {
 
 			if (key.endsWith(` [AS ARRAY]`)) {
 				let newKey = key.slice(0, -' [AS ARRAY]'.length);
-				const obj = parseItem(node[key], model);
+				const obj = parseItem(node[key], model, getShadowPath(shadowPath, newKey), shadowIndex);
 				let arr = [];
 				for (let [cond, v] of Object.entries(obj)) {
 					if ((cond.startsWith('[...IF ') || cond === '[...]') && Array.isArray(v)) arr = [...arr, ...v];
@@ -239,8 +250,34 @@ const parseItem = (node, model) => {
 				newNode[newKey] = arr;
 				continue;
 			}
+
+			if (key.endsWith(' [FROM]')) {
+				let newKey = key.slice(0, -' [FROM]'.length).trim();
+				newNode[newKey] = (node[key] === '@') ? model : model[node[key]];
+				continue;
+			}
+
+			if (key === '[...FROM]') {
+				const obj = (node[key] === '@') ? model : model[node[key]];
+				if (typeof obj === 'object' && !Array.isArray(obj)) {
+					for (let [k,v] of Object.entries(obj)) {
+						const itemShadowPath = getShadowPath(shadowPath, k);
+						const shadowItem = shadowIndex[itemShadowPath];
+						if (!shadowItem || !shadowItem.important) newNode[k] = v;
+					}
+				}
+				continue;
+			}
+
+			if (key.endsWith(' [!]')) {
+				let newKey = key.slice(0, -' [!]'.length).trim();
+				const itemShadowPath = getShadowPath(shadowPath, newKey);
+				newNode[newKey] = parseItem(node[key], model, itemShadowPath, shadowIndex);
+				shadowIndex[itemShadowPath] = { important: true };
+				continue;
+			}
 		}
-		newNode[key] = parseItem(node[key], model)
+		newNode[key] = parseItem(node[key], model, getShadowPath(shadowPath, key), shadowIndex)
 	}
 	return newNode;
 };

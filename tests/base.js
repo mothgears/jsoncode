@@ -2,7 +2,7 @@ const jsoncode = process.env.NODE_ENV === 'development' ? require('../jsoncode.m
 
 const tests = require('./base.json');
 
-const resultTree = jsoncode(tests, {
+const model = {
 	boolTrue    : true,
 	boolFalse   : false,
 	stringAlpha : "alpha",
@@ -11,8 +11,11 @@ const resultTree = jsoncode(tests, {
 	string10    : '10',
 	stringAlpha2: "alpha & itsString = @",
 	rxItemBItemC: /^(itemB|itemC)$/,
-	arrayBetaGamma: ['beta', 'gamma']
-});
+	arrayBetaGamma: ['beta', 'gamma'],
+	objectItems23: { item2:'beta', item3:10 }
+};
+
+const resultTree = jsoncode(tests, model);
 
 const jcTree = jsoncode(tests['TEST selector']);
 
@@ -210,7 +213,7 @@ test('JSONCode: TEST As Array', () => {
 });
 
 test('JSONCode: TEST By Spread', () => {
-	expect(resultTree["TEST [...BY ]"]).toEqual({
+	expect(resultTree["TEST %[...BY ]"]).toEqual({
 		"objectItem" : {
 			"item1" : "value1",
 			"item2" : "value2a",
@@ -223,7 +226,7 @@ test('JSONCode: TEST By Spread', () => {
 });
 
 test('JSONCode: TEST By regExp', () => {
-	expect(resultTree["TEST [...BY ] regExp"]).toEqual({
+	expect(resultTree["TEST %[...BY ] regExp"]).toEqual({
 		"item1" : "value 1",
 		"item3" : "value 3",
 		"item4" : "value 4"
@@ -231,7 +234,7 @@ test('JSONCode: TEST By regExp', () => {
 });
 
 test('JSONCode: TEST By array', () => {
-	expect(resultTree["TEST [...BY ] array"]).toEqual({
+	expect(resultTree["TEST %[...BY ] array"]).toEqual({
 		"item1" : "value 1",
 		"item3" : "value 3",
 		"item4" : "value 4"
@@ -267,4 +270,44 @@ test('JSONCode: TEST valuesSelector', () => {
 	expect(jcTree.getValuesOf('prop10')).toEqual([true, false]);
 	expect(jcTree.getValuesOf('prop11')).toEqual([true, false]);
 	expect(jcTree.getValuesOf('prop12')).toEqual([true, false]);
+});
+
+test('JSONCode: TEST [FROM]', () => {
+	expect(resultTree['TEST %[FROM]']).toEqual({
+		item1: 'value 1',
+		item2: 'alpha',
+		item3: true,
+		item4: 10,
+		item5: ['beta', 'gamma'],
+		item6: model
+	});
+});
+
+test('JSONCode: TEST [...FROM]', () => {
+	expect(resultTree['TEST %[...FROM]']).toEqual({
+		item1: 'value 1',
+		item2: 'beta',
+		item3: 10
+	});
+});
+
+test('JSONCode: TEST Important', () => {
+	expect(resultTree['TEST Important']).toEqual({
+		"object1": {
+			item1: 'value 1',
+			item2: 'value 2b',
+			item3: 'value 3',
+			item4: {
+				item4_1: 'value 4 1',
+				item4_2: 'value 4 2b',
+				item4_3: 'value 4 3',
+				item4_4: 'value 4 4b'
+			}
+		},
+		"object2": {
+			item1: 'value 1',
+			item2: 'beta',
+			item3: 'value 3',
+		}
+	});
 });

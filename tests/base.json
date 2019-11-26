@@ -284,7 +284,7 @@
           "dublicatedlocalSimpleItem2",
           "localSimpleItem3"
         ],
-        "arrayItemCombinedUnique [!...]": [
+        "arrayItemCombinedUnique [~...]": [
           "uniquelocalSimpleItem2",
           "localSimpleItem3"
         ]
@@ -307,7 +307,7 @@
           "dublicatedlocalSimpleItem2F",
           "localSimpleItem3F"
         ],
-        "arrayItemCombinedUnique [!...]": [
+        "arrayItemCombinedUnique [~...]": [
           "uniquelocalSimpleItem2F",
           "localSimpleItem3F"
         ]
@@ -328,7 +328,7 @@
     }
   },
 
-  "TEST [...BY ]" : {
+  "TEST %[...BY ]" : {
     "objectItem" : {
       "item1" : "value1",
       "item2" : "value2",
@@ -356,7 +356,7 @@
     }
   },
 
-  "TEST [...BY ] regExp" : {
+  "TEST %[...BY ] regExp" : {
     "item1" : "value 1",
 
     "[...BY rxItemBItemC]" : {
@@ -366,7 +366,7 @@
     }
   },
 
-  "TEST [...BY ] array" : {
+  "TEST %[...BY ] array" : {
     "item1" : "value 1",
 
     "[...BY arrayBetaGamma]" : {
@@ -499,6 +499,49 @@
         "#TRUE"  : "value 21",
         "#FALSE" : "value 22"
       }
+    }
+  },
+
+  "TEST %[FROM]" : {
+    "item1" : "value 1",
+    "item2 [FROM]" : "stringAlpha",
+    "item3 [FROM]" : "boolTrue",
+    "item4 [FROM]" : "int10",
+    "item5 [FROM]" : "arrayBetaGamma",
+    "item6 [FROM]" : "@"
+  },
+
+  "TEST %[...FROM]" : {
+    "item1"     : "value 1",
+    "item2"     : "alpha",
+    "[...FROM]" : "objectItems23"
+  },
+
+  "TEST Important" : {
+    "object1" : {
+      "item1"     : "value 1",
+      "item2"     : "value 2",
+      "item3 [!]" : "value 3",
+      "item4"     : {
+        "item4_1"     : "value 4 1",
+        "item4_2"     : "value 4 2",
+        "item4_3 [!]" : "value 4 3"
+      },
+      "[...IF boolTrue]": {
+        "item2" : "value 2b",
+        "item3" : "value 3b",
+        "item4 [*...]" : {
+          "item4_2" : "value 4 2b",
+          "item4_3" : "value 4 3b",
+          "item4_4" : "value 4 4b"
+        }
+      }
+    },
+    "object2" : {
+      "item1"     : "value 1",
+      "item2"     : "value 2",
+      "item3 [!]" : "value 3",
+      "[...FROM]": "objectItems23"
     }
   }
 }
