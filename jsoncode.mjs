@@ -153,6 +153,7 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 
 	const newNode = {};
 	const keys = Object.keys(node);
+	const deferredParsers = [];
 	for (let key of keys) {
 		if (key.endsWith(']')) {
 			const pureIF = key.startsWith('[IF ');
@@ -177,7 +178,10 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 
 				if (isTrue) {
 					const parsedItem = parseItem(node[key], model, getShadowPath(shadowPath, newKey), shadowIndex);
-					if (!spreadIF || !spread(parsedItem, newNode, shadowPath, shadowIndex)) newNode[newKey] = parsedItem;
+					if (spreadIF && typeof parsedItem === 'object' && !Array.isArray(parsedItem)) {
+						deferredParsers.push(()=>spread(parsedItem, newNode, shadowPath, shadowIndex));
+					}
+					else newNode[newKey] = parsedItem;
 				}
 
 				continue;
@@ -272,11 +276,13 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 			if (key === '[...FROM]') {
 				const obj = (node[key] === '@') ? model : model[node[key]];
 				if (typeof obj === 'object' && !Array.isArray(obj)) {
-					for (let [k,v] of Object.entries(obj)) {
-						const itemShadowPath = getShadowPath(shadowPath, k);
-						const shadowItem = shadowIndex[itemShadowPath];
-						if (!shadowItem || !shadowItem.important) newNode[k] = v;
-					}
+					deferredParsers.push(()=>{
+						for (let [k,v] of Object.entries(obj)) {
+							const itemShadowPath = getShadowPath(shadowPath, k);
+							const shadowItem = shadowIndex[itemShadowPath];
+							if (!shadowItem || !shadowItem.important) newNode[k] = v;
+						}
+					});
 				}
 				continue;
 			}
@@ -293,6 +299,9 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 		const escapedKey = escape(key);
 		newNode[escapedKey] = parseItem(node[key], model, getShadowPath(shadowPath, key), shadowIndex)
 	}
+
+	for (let prc of deferredParsers) prc();
+
 	return newNode;
 };
 

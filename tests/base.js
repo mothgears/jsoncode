@@ -293,7 +293,7 @@ test('JSONCode: TEST [...FROM]', () => {
 
 test('JSONCode: TEST Important', () => {
 	expect(resultTree['TEST Important']).toEqual({
-		"object1": {
+		object1: {
 			item1: 'value 1',
 			item2: 'value 2b',
 			item3: 'value 3',
@@ -304,10 +304,26 @@ test('JSONCode: TEST Important', () => {
 				item4_4: 'value 4 4b'
 			}
 		},
-		"object2": {
+		object2: {
 			item1: 'value 1',
 			item2: 'beta',
 			item3: 'value 3',
 		}
+	});
+});
+
+test('JSONCode: TEST Unsorted object', () => {
+	expect(resultTree['TEST Unsorted object']).toEqual({
+		item1: 'value 1',
+		item2: {
+			item2_1: 'value 2 1',
+			item2_2: 'value 2 2b',
+			item2_3: 'value 2 3b'
+		},
+		item3: {
+			item3_1: 'value 3 1',
+			item3_2: 'value 3 2b',
+			item3_3: 'value 3 3b'
+		},
 	});
 });
