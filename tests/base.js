@@ -213,7 +213,7 @@ test('JSONCode: TEST As Array', () => {
 });
 
 test('JSONCode: TEST By Spread', () => {
-	expect(resultTree["TEST %[...BY ]"]).toEqual({
+	expect(resultTree["TEST [...BY ]"]).toEqual({
 		"objectItem" : {
 			"item1" : "value1",
 			"item2" : "value2a",
@@ -226,7 +226,7 @@ test('JSONCode: TEST By Spread', () => {
 });
 
 test('JSONCode: TEST By regExp', () => {
-	expect(resultTree["TEST %[...BY ] regExp"]).toEqual({
+	expect(resultTree["TEST [...BY ] regExp"]).toEqual({
 		"item1" : "value 1",
 		"item3" : "value 3",
 		"item4" : "value 4"
@@ -234,7 +234,7 @@ test('JSONCode: TEST By regExp', () => {
 });
 
 test('JSONCode: TEST By array', () => {
-	expect(resultTree["TEST %[...BY ] array"]).toEqual({
+	expect(resultTree["TEST [...BY ] array"]).toEqual({
 		"item1" : "value 1",
 		"item3" : "value 3",
 		"item4" : "value 4"
@@ -273,7 +273,7 @@ test('JSONCode: TEST valuesSelector', () => {
 });
 
 test('JSONCode: TEST [FROM]', () => {
-	expect(resultTree['TEST %[FROM]']).toEqual({
+	expect(resultTree['TEST [FROM]']).toEqual({
 		item1: 'value 1',
 		item2: 'alpha',
 		item3: true,
@@ -284,7 +284,7 @@ test('JSONCode: TEST [FROM]', () => {
 });
 
 test('JSONCode: TEST [...FROM]', () => {
-	expect(resultTree['TEST %[...FROM]']).toEqual({
+	expect(resultTree['TEST [...FROM]']).toEqual({
 		item1: 'value 1',
 		item2: 'beta',
 		item3: 10

@@ -328,7 +328,7 @@
     }
   },
 
-  "TEST %[...BY ]" : {
+  "TEST \\[...BY ]" : {
     "objectItem" : {
       "item1" : "value1",
       "item2" : "value2",
@@ -356,7 +356,7 @@
     }
   },
 
-  "TEST %[...BY ] regExp" : {
+  "TEST \\[...BY ] regExp" : {
     "item1" : "value 1",
 
     "[...BY rxItemBItemC]" : {
@@ -366,7 +366,7 @@
     }
   },
 
-  "TEST %[...BY ] array" : {
+  "TEST \\[...BY ] array" : {
     "item1" : "value 1",
 
     "[...BY arrayBetaGamma]" : {
@@ -502,7 +502,7 @@
     }
   },
 
-  "TEST %[FROM]" : {
+  "TEST \\[FROM]" : {
     "item1" : "value 1",
     "item2 [FROM]" : "stringAlpha",
     "item3 [FROM]" : "boolTrue",
@@ -511,7 +511,7 @@
     "item6 [FROM]" : "@"
   },
 
-  "TEST %[...FROM]" : {
+  "TEST \\[...FROM]" : {
     "item1"     : "value 1",
     "item2"     : "alpha",
     "[...FROM]" : "objectItems23"

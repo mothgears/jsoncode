@@ -9,7 +9,8 @@
     "conditional statements",
     "logical tree",
     "switch",
-    "if"
+    "if",
+    "spread"
   ],
   "main": "jsoncode.pkg.js",
   "scripts": {

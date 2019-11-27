@@ -315,6 +315,46 @@ console.log(result);
 */
 ```
 
+#### `[FROM]`, `[...FROM]`
+This operator sets value of an item from a property
+```js
+const myJsonObject1 = {
+    "item1" : "some content",
+    "item2 [FROM]" : "myVariable1"
+};
+const myJsonObject2 = {
+    "item1" : "some content 1",
+    "item2" : "some content 2",
+    "[...FROM]" : "myVariable2"
+};
+
+const result1 = jsoncode(myJsonObject1, {myVariable1: 'some value'});
+console.log(result1);
+/*
+{
+    "item1" : "some content",
+    "item2" : "some value"
+}
+*/
+
+const result2 = jsoncode(myJsonObject2, {
+    myVariable2: { item2: 'some value 2', item3: 'some value 3' }
+});
+console.log(result2);
+/*
+{
+    "item1" : "some content 1",
+    "item2" : "some value 2",
+    "item3" : "some value 3"
+}
+*/
+```
+
+You may sets value from the whole model using `@` symbol:  
+```
+"item1 [FROM]": "@"
+```
+
 #### Selectors
 **"getParams"**  
 Select properties from json

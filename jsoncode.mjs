@@ -120,6 +120,8 @@ const getShadowPath = (shadowPath, ...itemKeys) => itemKeys.reduce(
 	shadowPath
 );
 
+const escape = (key) => key.replace(/\\([\\\[])/g, tokens=>tokens[1]);
+
 const spread = (parsedItem, newNode, shadowPath, shadowIndex) => {
 	if (typeof parsedItem !== 'object' || Array.isArray(parsedItem)) return false;
 
@@ -151,7 +153,7 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 
 	const newNode = {};
 	const keys = Object.keys(node);
-	for (const key of keys) {
+	for (let key of keys) {
 		if (key.endsWith(']')) {
 			const pureIF = key.startsWith('[IF ');
 			const spreadIF = key.startsWith('[...IF ');
@@ -162,7 +164,12 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 
 				if (pureIF)        cond = key.slice('[IF '.length, -1);
 				else if (spreadIF) cond = key.slice('[...IF '.length, -1);
-				else               [newKey, cond] = key.slice(0, -1).split(' [IF ');
+				else {
+					const tmpKey = key.slice(0, -1);
+					const pos = tmpKey.lastIndexOf(' [IF ');
+					newKey = tmpKey.substring(0, pos);
+					cond = tmpKey.substring(pos + ' [IF '.length);
+				}
 
 				newKey = newKey.trim();
 
@@ -183,7 +190,12 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 
 				if (spreadBY)     caseline           = key.slice('[...BY '.length, -1);
 				else if (arrayBY) [newKey, caseline] = key.slice(0, -1).split(' [*BY ');
-				else              [newKey, caseline] = key.slice(0, -1).split(' [BY ');
+				else {
+					const tmpKey = key.slice(0, -1);
+					const pos = tmpKey.lastIndexOf(' [BY ');
+					newKey = tmpKey.substring(0, pos);
+					caseline = tmpKey.substring(pos + ' [BY '.length);
+				}
 
 				newKey = newKey.trim();
 				caseline = caseline.trim();
@@ -277,7 +289,9 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 				continue;
 			}
 		}
-		newNode[key] = parseItem(node[key], model, getShadowPath(shadowPath, key), shadowIndex)
+
+		const escapedKey = escape(key);
+		newNode[escapedKey] = parseItem(node[key], model, getShadowPath(shadowPath, key), shadowIndex)
 	}
 	return newNode;
 };
