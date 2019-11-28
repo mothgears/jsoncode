@@ -1,6 +1,6 @@
 {
   "name": "jsoncode",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "JSON with conditional statements",
   "author": "Artem Varshavin",
   "license": "MIT",
@@ -12,10 +12,10 @@
     "if",
     "spread"
   ],
-  "main": "jsoncode.pkg.js",
+  "main": "jsoncode.lib.js",
   "scripts": {
     "test": "cross-env NODE_ENV=development node --experimental-modules --experimental-json-modules node_modules/jest/bin/jest.js",
-    "build": "cross-env NODE_ENV=production babel jsoncode.mjs --plugins=babel-plugin-transform-object-rest-spread,babel-plugin-array-includes,./lib/babel-plugin-starts-with-ends-with.js,babel-plugin-add-module-exports --presets env --out-file jsoncode.pkg.js",
+    "build": "cross-env NODE_ENV=production babel jsoncode.mjs --plugins=babel-plugin-transform-object-rest-spread,babel-plugin-array-includes,babel-plugin-starts-with-ends-with,babel-plugin-add-module-exports --presets env --out-file jsoncode.lib.js",
     "build-test": "cross-env NODE_ENV=production jest"
   },
   "repository": {
@@ -28,6 +28,7 @@
     "babel-plugin-add-module-exports": "^1.0.2",
     "babel-plugin-array-includes": "^2.0.3",
     "babel-plugin-remove-import-export": "^1.1.0",
+    "babel-plugin-starts-with-ends-with": "^1.0.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-minify": "^0.5.0",

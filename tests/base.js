@@ -1,4 +1,4 @@
-const jsoncode = process.env.NODE_ENV === 'development' ? require('../jsoncode.mjs').default : require('../jsoncode.pkg.js');
+const jsoncode = process.env.NODE_ENV === 'development' ? require('../jsoncode.mjs').default : require('../jsoncode.lib.js');
 
 const tests = require('./base.json');
 
