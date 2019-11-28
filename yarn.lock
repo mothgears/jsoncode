@@ -904,10 +904,10 @@ babel-plugin-remove-import-export@^1.1.0:
   resolved "https://registry.yarnpkg.com/babel-plugin-remove-import-export/-/babel-plugin-remove-import-export-1.1.0.tgz#6404e1b56e04f8b6483b9b9760a7e8e7a7a646ee"
   integrity sha512-jEUIUEhuaIyOBh/TNvlQ3XSOxyha3YxZ4dlB2ncCRRJOpZ65lHGkORFANrnYL05qjnnoMfPgOHgymzAKDJkmKg==
 
-babel-plugin-starts-with-ends-with@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/babel-plugin-starts-with-ends-with/-/babel-plugin-starts-with-ends-with-1.0.1.tgz#8790ade6ffa233b86bbbef887c588527aa72a02a"
-  integrity sha512-J6ZwWvP421kB8JZcfi0/A1yRSpobfKbS0tzD9WQ4jvwjXfTzAuTvluLgewvd3SxoHiWgMXxMgfzSQWgXmER2IA==
+babel-plugin-starts-with-ends-with@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/babel-plugin-starts-with-ends-with/-/babel-plugin-starts-with-ends-with-1.0.2.tgz#e1f24b7df4460fe17213f8460498c50735bf3655"
+  integrity sha512-zxbJraY5qhtEBwE2LBiMZf35JSc2Z0iDPCG9eYfuXIc/2FBz0eglixaKAj8hFM4rgwRojAMAjYgE82NP2cen+g==
 
 babel-plugin-syntax-async-functions@^6.8.0:
   version "6.13.0"
