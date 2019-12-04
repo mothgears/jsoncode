@@ -148,8 +148,8 @@ const spread = (parsedItem, newNode, shadowPath, shadowIndex) => {
 };
 
 const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
-	if (typeof node !== 'object') return node;
-	if (Array.isArray(node))      return node.map(item=>parseItem(item, model, shadowPath, shadowIndex));
+	if (!node || typeof node !== 'object') return node;
+	if (Array.isArray(node))               return node.map(item=>parseItem(item, model, shadowPath, shadowIndex));
 
 	const newNode = {};
 	const keys = Object.keys(node);
@@ -322,7 +322,7 @@ class Jsoncode {
 						value: value
 					});
 				}
-				if (typeof value === 'object') Jsoncode._selectKeysOfNode(rx, value, keys);
+				if (value && typeof value === 'object') Jsoncode._selectKeysOfNode(rx, value, keys);
 			}
 		}
 		return keys;

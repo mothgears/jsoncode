@@ -386,6 +386,10 @@
   },
 
   "TEST selector" : {
+    "item0" : {
+      "item0_1" : "value 0",
+      "item0_2" : null
+    },
     "item1 [IF 'valStr1a' E prop1]" : {
       "item1_1 [IF 'valStr1b' E prop0]" : "value 1",
       "item1_2 [IF 'valStr1c' E prop1]" : "value 2"
