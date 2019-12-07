@@ -101,6 +101,7 @@ test('JSONCode: TEST 2', () => {
 
 test('JSONCode: TEST 3', () => {
 	expect(resultTree["TEST 3"]).toEqual({
+		"item0":null,
 		"item1":"1a",
 		"item2":"2b"
 	});

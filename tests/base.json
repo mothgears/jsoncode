@@ -130,6 +130,11 @@
   },
 
   "TEST 3" : {
+    "item0 [BY stringAlpha]" : {
+      "alpha" : null,
+      "beta"  : "1b",
+      "gamma" : "1c"
+    },
     "item1 [BY stringAlpha]" : {
       "alpha" : "1a",
       "beta"  : "1b",

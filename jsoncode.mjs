@@ -235,7 +235,9 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 					if (typeof casevalue === 'boolean' || casevalue === null || casevalue === undefined) {
 						casevalue = casevalue ? '#TRUE' : '#FALSE';
 					}
-					if (selectedCase) selectedCase = selectedCase[casevalue] || selectedCase['#DEFAULT'];
+					if (selectedCase) selectedCase = Object.keys(selectedCase).includes(casevalue)
+						? selectedCase[casevalue]
+						: selectedCase['#DEFAULT'];
 				}
 
 				if (spreadBY && selectedCases.length > 0) for (let sc of selectedCases) {
