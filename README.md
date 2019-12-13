@@ -1,8 +1,6 @@
 # JSONCode
 JSON with conditional statements, switches, spread/combine and other operators.
 
-**[ ! ]** For "ES5" compatibility this package needs **`Symbol`** and **`Set`**, use polyfills (e.g. core-js, babel with babel-polyfill).
-
 ## Example
 "petShop.json"
 ```json

@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV === 'development') require('../jsoncode.mjs'); else require('../jsoncode.lib.js');
+if (process.env.NODE_ENV === 'development') require('../src/index.mjs'); else require('../jsoncode.lib.js');
 const petShop = require('./petShop.json');
 
 test('JSONCode: Pet shop / price list', () => {
