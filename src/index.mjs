@@ -14,7 +14,9 @@ const compTypes = {
 	'<=' : (a,b) => a <= b,
 	'~'  : (a,b) => toUniversal(a) === toUniversal(b),
 	'E'  : (a,b) => b?b.includes(a):false,
-	'C'  : (a,b) => b?b.test(a):false
+	'C'  : (a,b) => b?b.test(a):false,
+	'!E' : (a,b) => b?!b.includes(a):true,
+	'!C' : (a,b) => b?!b.test(a):true
 };
 
 const getStringOrRxValue = (_p, s) => {

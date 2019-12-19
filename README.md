@@ -104,6 +104,8 @@ Animals food { 'In stock': '90 kg' }
 | `<=` | Less than or equal to | `[IF a <= 10]`
 | `E` | Is an element of (array) | `[IF 'str' E a]`
 | `C` | Is match (regEx) | `[IF 'str' C a]`
+| `!E` | Is not an element of (array) | `[IF 'str' !E a]`
+| `!C` | Is not match (regEx) | `[IF 'str' !C a]`
 | Without operator | Interp. as `=`, `E`, `C` depending on args type | `[IF 'str' a]`
 
 #### Existence operator `[IF ]`

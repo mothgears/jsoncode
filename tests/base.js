@@ -63,6 +63,12 @@ test('JSONCode: TEST 1RX', () => {
 	});
 });
 
+test('JSONCode: TEST !C', () => {
+	expect(resultTree["TEST !C"]).toEqual({
+		"item1" : "value 1"
+	});
+});
+
 test('JSONCode: TEST 1RXS', () => {
 	expect(resultTree["TEST 1RXS"]).toEqual({
 		"item1":"value 1",
@@ -248,6 +254,12 @@ test('JSONCode: TEST E', () => {
 		"item3" : "value 3",
 		"item5" : "value 5",
 		"item6" : "value 6"
+	});
+});
+
+test('JSONCode: TEST !E', () => {
+	expect(resultTree["TEST !E"]).toEqual({
+		"item1" : "value 1"
 	});
 });
 

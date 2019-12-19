@@ -54,6 +54,12 @@
     "item6 [IF 'itemC' rxItemBItemC]" : "value 6"
   },
 
+  "TEST !C" : {
+    "item1 [IF 'itemA' !C rxItemBItemC]" : "value 1",
+    "item2 [IF 'itemB' !C rxItemBItemC]" : "value 2",
+    "item3 [IF 'itemC' !C rxItemBItemC]" : "value 3"
+  },
+
   "TEST 1RXS" : {
     "item1 [IF stringAlpha C /^al.+/]" : "value 1",
     "item2 [IF stringAlpha C /^be.+/]" : "value 2",
@@ -388,6 +394,12 @@
     "item4 [IF 'alpha' arrayBetaGamma]"   : "value 4",
     "item5 [IF 'beta'  arrayBetaGamma]"   : "value 5",
     "item6 [IF 'gamma' arrayBetaGamma]"   : "value 6"
+  },
+
+  "TEST !E" : {
+    "item1 [IF 'alpha' !E arrayBetaGamma]" : "value 1",
+    "item2 [IF 'beta'  !E arrayBetaGamma]" : "value 2",
+    "item3 [IF 'gamma' !E arrayBetaGamma]" : "value 3"
   },
 
   "TEST selector" : {

@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
 require("core-js/modules/es.symbol");
 
 require("core-js/modules/es.symbol.description");
@@ -35,6 +37,8 @@ require("core-js/modules/es.object.to-string");
 require("core-js/modules/es.object.values");
 
 require("core-js/modules/es.regexp.constructor");
+
+require("core-js/modules/es.regexp.exec");
 
 require("core-js/modules/es.regexp.to-string");
 
@@ -97,34 +101,20 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
-
-function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+var _typeof2 = _interopRequireDefault(require("@babel/runtime/helpers/typeof"));
 
 var toUniversal = function toUniversal(v) {
   if (v === null || v === undefined || v === 0) return '';
   if (typeof v === 'number') return v.toString();
-  if (_typeof(v) === 'object') return JSON.stringify(v);
+  if ((0, _typeof2.default)(v) === 'object') return JSON.stringify(v);
   return v;
 };
 
@@ -155,6 +145,12 @@ var compTypes = {
   },
   'C': function C(a, b) {
     return b ? b.test(a) : false;
+  },
+  '!E': function E(a, b) {
+    return b ? !b.includes(a) : true;
+  },
+  '!C': function C(a, b) {
+    return b ? !b.test(a) : true;
   }
 };
 
@@ -166,13 +162,13 @@ var getStringOrRxValue = function getStringOrRxValue(_p, s) {
 
 var condTypes = {
   1: function _(m, _ref) {
-    var _ref2 = _slicedToArray(_ref, 1),
+    var _ref2 = (0, _slicedToArray2.default)(_ref, 1),
         _a = _ref2[0];
 
     return _a.startsWith('!') ? !m[_a.slice(1)] : m[_a];
   },
   2: function _(m, _ref3, s) {
-    var _ref4 = _slicedToArray(_ref3, 2),
+    var _ref4 = (0, _slicedToArray2.default)(_ref3, 2),
         _a = _ref4[0],
         _b = _ref4[1];
 
@@ -180,7 +176,7 @@ var condTypes = {
   },
   //blind operation
   3: function _(m, _ref5, s) {
-    var _ref6 = _slicedToArray(_ref5, 3),
+    var _ref6 = (0, _slicedToArray2.default)(_ref5, 3),
         _a = _ref6[0],
         b = _ref6[1],
         _c = _ref6[2];
@@ -229,11 +225,11 @@ var getStringOrRx = function getStringOrRx(cond) {
   var condRegExps = cond.join("'").split("/");
   cond = [];
 
-  for (var _i2 = 0; _i2 < condRegExps.length; _i2++) {
-    if (_i2 % 2) {
-      cond.push(_i2);
-      stringsAndRxs["/".concat(_i2, "/")] = condRegExps[_i2];
-    } else cond.push(condRegExps[_i2]);
+  for (var _i = 0; _i < condRegExps.length; _i++) {
+    if (_i % 2) {
+      cond.push(_i);
+      stringsAndRxs["/".concat(_i, "/")] = condRegExps[_i];
+    } else cond.push(condRegExps[_i]);
   }
 
   return [cond.join("/"), stringsAndRxs];
@@ -247,7 +243,7 @@ var parseLogicalExp = function parseLogicalExp(cond, model) {
 
   var _getStringOrRx = getStringOrRx(cond);
 
-  var _getStringOrRx2 = _slicedToArray(_getStringOrRx, 2);
+  var _getStringOrRx2 = (0, _slicedToArray2.default)(_getStringOrRx, 2);
 
   cond = _getStringOrRx2[0];
   condStrings = _getStringOrRx2[1];
@@ -286,14 +282,14 @@ var escape = function escape(key) {
 };
 
 var spread = function spread(parsedItem, newNode, shadowPath, shadowIndex) {
-  if (_typeof(parsedItem) !== 'object' || Array.isArray(parsedItem)) return false;
+  if ((0, _typeof2.default)(parsedItem) !== 'object' || Array.isArray(parsedItem)) return false;
 
-  for (var _i3 = 0, _Object$entries = Object.entries(parsedItem); _i3 < _Object$entries.length; _i3++) {
-    var _Object$entries$_i = _slicedToArray(_Object$entries[_i3], 2),
+  for (var _i2 = 0, _Object$entries = Object.entries(parsedItem); _i2 < _Object$entries.length; _i2++) {
+    var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i2], 2),
         key = _Object$entries$_i[0],
         value = _Object$entries$_i[1];
 
-    if (key.endsWith(' [*...]') || key.endsWith(' [~...]') && _typeof(value) === 'object') {
+    if (key.endsWith(' [*...]') || key.endsWith(' [~...]') && (0, _typeof2.default)(value) === 'object') {
       var realKey = key.slice(0, -' [*...]'.length);
 
       if (Array.isArray(value)) {
@@ -321,10 +317,10 @@ var spread = function spread(parsedItem, newNode, shadowPath, shadowIndex) {
               }
             }
           }
-        } else newNode[realKey] = [].concat(_toConsumableArray(newNode[realKey] || []), _toConsumableArray(value));
+        } else newNode[realKey] = [].concat((0, _toConsumableArray2.default)(newNode[realKey] || []), (0, _toConsumableArray2.default)(value));
       } else {
-        for (var _i4 = 0, _Object$keys = Object.keys(value); _i4 < _Object$keys.length; _i4++) {
-          var subKey = _Object$keys[_i4];
+        for (var _i3 = 0, _Object$keys = Object.keys(value); _i3 < _Object$keys.length; _i3++) {
+          var subKey = _Object$keys[_i3];
           var itemShadowPath = getShadowPath(shadowPath, realKey, subKey);
           var shadowItem = shadowIndex[itemShadowPath];
           if (!shadowItem || !shadowItem.important) newNode[realKey][subKey] = value[subKey];
@@ -344,7 +340,7 @@ var spread = function spread(parsedItem, newNode, shadowPath, shadowIndex) {
 var parseItem = function parseItem(node, model) {
   var shadowPath = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
   var shadowIndex = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  if (!node || _typeof(node) !== 'object') return node;
+  if (!node || (0, _typeof2.default)(node) !== 'object') return node;
   if (Array.isArray(node)) return node.map(function (item) {
     return parseItem(item, model, shadowPath, shadowIndex);
   });
@@ -352,8 +348,8 @@ var parseItem = function parseItem(node, model) {
   var keys = Object.keys(node);
   var deferredParsers = [];
 
-  for (var _i5 = 0, _keys = keys; _i5 < _keys.length; _i5++) {
-    var key = _keys[_i5];
+  for (var _i4 = 0, _keys = keys; _i4 < _keys.length; _i4++) {
+    var key = _keys[_i4];
 
     if (key.endsWith(']')) {
       var pureIF = key.startsWith('[IF ');
@@ -375,7 +371,7 @@ var parseItem = function parseItem(node, model) {
           (function () {
             var parsedItem = parseItem(node[key], model, getShadowPath(shadowPath, newKey), shadowIndex);
 
-            if (spreadIF && _typeof(parsedItem) === 'object' && !Array.isArray(parsedItem)) {
+            if (spreadIF && (0, _typeof2.default)(parsedItem) === 'object' && !Array.isArray(parsedItem)) {
               deferredParsers.push(function () {
                 return spread(parsedItem, newNode, shadowPath, shadowIndex);
               });
@@ -395,7 +391,7 @@ var parseItem = function parseItem(node, model) {
         if (spreadBY) caseline = key.slice('[...BY '.length, -1);else if (arrayBY) {
           var _key$slice$split = key.slice(0, -1).split(' [*BY ');
 
-          var _key$slice$split2 = _slicedToArray(_key$slice$split, 2);
+          var _key$slice$split2 = (0, _slicedToArray2.default)(_key$slice$split, 2);
 
           _newKey = _key$slice$split2[0];
           caseline = _key$slice$split2[1];
@@ -417,16 +413,16 @@ var parseItem = function parseItem(node, model) {
           var casevalue = parseLogicalExp(caseline[0].trim(), model);
 
           if (casevalue instanceof RegExp) {
-            for (var _i7 = 0, _Object$entries2 = Object.entries(selectedCase); _i7 < _Object$entries2.length; _i7++) {
-              var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i7], 2),
+            for (var _i6 = 0, _Object$entries2 = Object.entries(selectedCase); _i6 < _Object$entries2.length; _i6++) {
+              var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i6], 2),
                   caseKey = _Object$entries2$_i[0],
                   value = _Object$entries2$_i[1];
 
               if (casevalue.test(caseKey)) selectedCases.push(value);
             }
           } else if (Array.isArray(casevalue)) {
-            for (var _i8 = 0, _Object$entries3 = Object.entries(selectedCase); _i8 < _Object$entries3.length; _i8++) {
-              var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i8], 2),
+            for (var _i7 = 0, _Object$entries3 = Object.entries(selectedCase); _i7 < _Object$entries3.length; _i7++) {
+              var _Object$entries3$_i = (0, _slicedToArray2.default)(_Object$entries3[_i7], 2),
                   _caseKey = _Object$entries3$_i[0],
                   _value = _Object$entries3$_i[1];
 
@@ -446,16 +442,16 @@ var parseItem = function parseItem(node, model) {
 
               if (spreadBY && caseline.length === 1) {
                 if (_casevalue instanceof RegExp) {
-                  for (var _i9 = 0, _Object$entries4 = Object.entries(selectedCase); _i9 < _Object$entries4.length; _i9++) {
-                    var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i9], 2),
+                  for (var _i8 = 0, _Object$entries4 = Object.entries(selectedCase); _i8 < _Object$entries4.length; _i8++) {
+                    var _Object$entries4$_i = (0, _slicedToArray2.default)(_Object$entries4[_i8], 2),
                         _caseKey2 = _Object$entries4$_i[0],
                         _value2 = _Object$entries4$_i[1];
 
                     if (_casevalue.test(_caseKey2)) selectedCases.push(_value2);
                   }
                 } else if (Array.isArray(_casevalue)) {
-                  for (var _i10 = 0, _Object$entries5 = Object.entries(selectedCase); _i10 < _Object$entries5.length; _i10++) {
-                    var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i10], 2),
+                  for (var _i9 = 0, _Object$entries5 = Object.entries(selectedCase); _i9 < _Object$entries5.length; _i9++) {
+                    var _Object$entries5$_i = (0, _slicedToArray2.default)(_Object$entries5[_i9], 2),
                         _caseKey3 = _Object$entries5$_i[0],
                         _value3 = _Object$entries5$_i[1];
 
@@ -530,12 +526,12 @@ var parseItem = function parseItem(node, model) {
         var obj = parseItem(node[key], model, getShadowPath(shadowPath, _newKey2), shadowIndex);
         var arr = [];
 
-        for (var _i11 = 0, _Object$entries6 = Object.entries(obj); _i11 < _Object$entries6.length; _i11++) {
-          var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i11], 2),
+        for (var _i10 = 0, _Object$entries6 = Object.entries(obj); _i10 < _Object$entries6.length; _i10++) {
+          var _Object$entries6$_i = (0, _slicedToArray2.default)(_Object$entries6[_i10], 2),
               _cond = _Object$entries6$_i[0],
               v = _Object$entries6$_i[1];
 
-          if ((_cond.startsWith('[...IF ') || _cond === '[...]') && Array.isArray(v)) arr = [].concat(_toConsumableArray(arr), _toConsumableArray(v));else arr.push(v);
+          if ((_cond.startsWith('[...IF ') || _cond === '[...]') && Array.isArray(v)) arr = [].concat((0, _toConsumableArray2.default)(arr), (0, _toConsumableArray2.default)(v));else arr.push(v);
         }
 
         newNode[_newKey2] = arr;
@@ -553,10 +549,10 @@ var parseItem = function parseItem(node, model) {
         var _ret = function () {
           var obj = node[key] === '@' ? model : model[node[key]];
 
-          if (_typeof(obj) === 'object' && !Array.isArray(obj)) {
+          if ((0, _typeof2.default)(obj) === 'object' && !Array.isArray(obj)) {
             deferredParsers.push(function () {
-              for (var _i12 = 0, _Object$entries7 = Object.entries(obj); _i12 < _Object$entries7.length; _i12++) {
-                var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i12], 2),
+              for (var _i11 = 0, _Object$entries7 = Object.entries(obj); _i11 < _Object$entries7.length; _i11++) {
+                var _Object$entries7$_i = (0, _slicedToArray2.default)(_Object$entries7[_i11], 2),
                     k = _Object$entries7$_i[0],
                     _v = _Object$entries7$_i[1];
 
@@ -589,8 +585,8 @@ var parseItem = function parseItem(node, model) {
     newNode[escapedKey] = parseItem(node[key], model, getShadowPath(shadowPath, key), shadowIndex);
   }
 
-  for (var _i6 = 0, _deferredParsers = deferredParsers; _i6 < _deferredParsers.length; _i6++) {
-    var prc = _deferredParsers[_i6];
+  for (var _i5 = 0, _deferredParsers = deferredParsers; _i5 < _deferredParsers.length; _i5++) {
+    var prc = _deferredParsers[_i5];
     prc();
   }
 
@@ -601,12 +597,11 @@ var Jsoncode =
 /*#__PURE__*/
 function () {
   function Jsoncode(src) {
-    _classCallCheck(this, Jsoncode);
-
+    (0, _classCallCheck2.default)(this, Jsoncode);
     this._source = src;
   }
 
-  _createClass(Jsoncode, [{
+  (0, _createClass2.default)(Jsoncode, [{
     key: "specify",
     value: function specify(model) {
       return parseItem(this._source, model);
@@ -627,7 +622,7 @@ function () {
 
           if (['IF', '...IF'].includes(key.operator)) {
             var _getStringOrRx3 = getStringOrRx(key.condition),
-                _getStringOrRx4 = _slicedToArray(_getStringOrRx3, 2),
+                _getStringOrRx4 = (0, _slicedToArray2.default)(_getStringOrRx3, 2),
                 condition = _getStringOrRx4[0],
                 strings = _getStringOrRx4[1];
 
@@ -668,7 +663,7 @@ function () {
             }
           } else if (['BY', '*BY', '...BY'].includes(key.operator)) {
             var _getStringOrRx5 = getStringOrRx(key.condition),
-                _getStringOrRx6 = _slicedToArray(_getStringOrRx5, 2),
+                _getStringOrRx6 = (0, _slicedToArray2.default)(_getStringOrRx5, 2),
                 _condition = _getStringOrRx6[0],
                 _strings = _getStringOrRx6[1];
 
@@ -704,7 +699,7 @@ function () {
                   targetCondition = true;
                 } else {
                   targetNodes = targetNodes.reduce(function (newNodes, node) {
-                    return [].concat(_toConsumableArray(newNodes), _toConsumableArray(Object.values(node)));
+                    return [].concat((0, _toConsumableArray2.default)(newNodes), (0, _toConsumableArray2.default)(Object.values(node)));
                   }, []);
                 }
               } else result.add(_exp.startsWith('!') ? _exp.slice(1) : _exp);
@@ -775,8 +770,8 @@ function () {
           }
         }
       } else {
-        for (var _i13 = 0, _Object$entries8 = Object.entries(node); _i13 < _Object$entries8.length; _i13++) {
-          var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i13], 2),
+        for (var _i12 = 0, _Object$entries8 = Object.entries(node); _i12 < _Object$entries8.length; _i12++) {
+          var _Object$entries8$_i = (0, _slicedToArray2.default)(_Object$entries8[_i12], 2),
               key = _Object$entries8$_i[0],
               _value4 = _Object$entries8$_i[1];
 
@@ -790,7 +785,7 @@ function () {
             });
           }
 
-          if (_value4 && _typeof(_value4) === 'object') Jsoncode._selectKeysOfNode(rx, _value4, keys);
+          if (_value4 && (0, _typeof2.default)(_value4) === 'object') Jsoncode._selectKeysOfNode(rx, _value4, keys);
         }
       }
 
@@ -837,7 +832,6 @@ function () {
       } else return params;
     }
   }]);
-
   return Jsoncode;
 }();
 
