@@ -586,5 +586,17 @@
       "item3_1" : "value 3 1",
       "item3_2" : "value 3 2"
     }
+  },
+
+  "TEST \\[KEY-BY]" : {
+    "item1" : "value 1",
+    "[KEY-BY boolTrue ] 'item [2|a]' | 'item [2|b]'": "value 2",
+    "[KEY-BY boolFalse] 'item [3|a]' | 'item [3|b]'": "value 3",
+    "[KEY-BY stringAlpha = 'alpha'] 'item [4|a]' | 'item [4|b]'": "value 4",
+    "[KEY-BY stringAlpha = 'beta' ] 'item [5|a]' | 'item [5|b]'": "value 5",
+    "[KEY-BY boolTrue ] item6a | item6b": "value 6",
+    "[KEY-BY boolFalse] item7a | item7b": "value 7",
+    "[KEY-BY stringAlpha = 'alpha'] item8a | item8b": "value 8",
+    "[KEY-BY stringAlpha = 'beta' ] item9a | item9b": "value 9"
   }
 }

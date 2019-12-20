@@ -105,6 +105,8 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
+var _toArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toArray"));
+
 var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
@@ -351,31 +353,52 @@ var parseItem = function parseItem(node, model) {
   for (var _i4 = 0, _keys = keys; _i4 < _keys.length; _i4++) {
     var key = _keys[_i4];
 
-    if (key.endsWith(']')) {
+    if (key.startsWith('[KEY-BY')) {
+      var _key$slice$split = key.slice('[KEY-BY'.length).split(']'),
+          _key$slice$split2 = (0, _toArray2.default)(_key$slice$split),
+          condition = _key$slice$split2[0],
+          keyVariants = _key$slice$split2.slice(1);
+
+      var strAndRx = void 0;
+
+      var _getStringOrRx3 = getStringOrRx(keyVariants.join(']'));
+
+      var _getStringOrRx4 = (0, _slicedToArray2.default)(_getStringOrRx3, 2);
+
+      keyVariants = _getStringOrRx4[0];
+      strAndRx = _getStringOrRx4[1];
+      keyVariants = keyVariants.split('|');
+      var isTrue = parseLogicalExp(condition, model);
+      var newKey = keyVariants[+!isTrue].trim();
+      if (newKey.startsWith("'")) newKey = strAndRx[newKey];
+      newNode[newKey] = parseItem(node[key], model, getShadowPath(shadowPath, newKey), shadowIndex);
+      continue;
+    } else if (key.endsWith(']')) {
       var pureIF = key.startsWith('[IF ');
       var spreadIF = key.startsWith('[...IF ');
 
       if (key.includes(' [IF ') || pureIF || spreadIF) {
-        var newKey = key,
+        var _newKey = key,
             cond = void 0;
         if (pureIF) cond = key.slice('[IF '.length, -1);else if (spreadIF) cond = key.slice('[...IF '.length, -1);else {
           var tmpKey = key.slice(0, -1);
           var pos = tmpKey.lastIndexOf(' [IF ');
-          newKey = tmpKey.substring(0, pos);
+          _newKey = tmpKey.substring(0, pos);
           cond = tmpKey.substring(pos + ' [IF '.length);
         }
-        newKey = newKey.trim();
-        var isTrue = parseLogicalExp(cond, model);
+        _newKey = _newKey.trim();
 
-        if (isTrue) {
+        var _isTrue = parseLogicalExp(cond, model);
+
+        if (_isTrue) {
           (function () {
-            var parsedItem = parseItem(node[key], model, getShadowPath(shadowPath, newKey), shadowIndex);
+            var parsedItem = parseItem(node[key], model, getShadowPath(shadowPath, _newKey), shadowIndex);
 
             if (spreadIF && (0, _typeof2.default)(parsedItem) === 'object' && !Array.isArray(parsedItem)) {
               deferredParsers.push(function () {
                 return spread(parsedItem, newNode, shadowPath, shadowIndex);
               });
-            } else newNode[newKey] = parsedItem;
+            } else newNode[_newKey] = parsedItem;
           })();
         }
 
@@ -386,24 +409,24 @@ var parseItem = function parseItem(node, model) {
       var spreadBY = key.startsWith('[...BY ');
 
       if (key.includes(' [BY ') || spreadBY || arrayBY) {
-        var _newKey = key,
+        var _newKey2 = key,
             caseline = void 0;
         if (spreadBY) caseline = key.slice('[...BY '.length, -1);else if (arrayBY) {
-          var _key$slice$split = key.slice(0, -1).split(' [*BY ');
+          var _key$slice$split3 = key.slice(0, -1).split(' [*BY ');
 
-          var _key$slice$split2 = (0, _slicedToArray2.default)(_key$slice$split, 2);
+          var _key$slice$split4 = (0, _slicedToArray2.default)(_key$slice$split3, 2);
 
-          _newKey = _key$slice$split2[0];
-          caseline = _key$slice$split2[1];
+          _newKey2 = _key$slice$split4[0];
+          caseline = _key$slice$split4[1];
         } else {
           var _tmpKey = key.slice(0, -1);
 
           var _pos = _tmpKey.lastIndexOf(' [BY ');
 
-          _newKey = _tmpKey.substring(0, _pos);
+          _newKey2 = _tmpKey.substring(0, _pos);
           caseline = _tmpKey.substring(_pos + ' [BY '.length);
         }
-        _newKey = _newKey.trim();
+        _newKey2 = _newKey2.trim();
         caseline = caseline.trim();
         caseline = caseline.split(', ');
         var selectedCase = node[key];
@@ -490,8 +513,8 @@ var parseItem = function parseItem(node, model) {
           try {
             for (var _iterator3 = selectedCases[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
               var sc = _step3.value;
-              var parsedItem = parseItem(sc, model, getShadowPath(shadowPath, _newKey), shadowIndex);
-              if (spreadBY) spread(parsedItem, newNode, shadowPath, shadowIndex);else newNode[_newKey] = parsedItem;
+              var parsedItem = parseItem(sc, model, getShadowPath(shadowPath, _newKey2), shadowIndex);
+              if (spreadBY) spread(parsedItem, newNode, shadowPath, shadowIndex);else newNode[_newKey2] = parsedItem;
             }
           } catch (err) {
             _didIteratorError3 = true;
@@ -511,9 +534,9 @@ var parseItem = function parseItem(node, model) {
           if (arrayBY && selectedCases.length > 0) selectedCase = selectedCases;
 
           if (selectedCase !== undefined) {
-            var _parsedItem = parseItem(selectedCase, model, getShadowPath(shadowPath, _newKey), shadowIndex);
+            var _parsedItem = parseItem(selectedCase, model, getShadowPath(shadowPath, _newKey2), shadowIndex);
 
-            if (spreadBY) spread(_parsedItem, newNode, shadowPath, shadowIndex);else newNode[_newKey] = _parsedItem;
+            if (spreadBY) spread(_parsedItem, newNode, shadowPath, shadowIndex);else newNode[_newKey2] = _parsedItem;
           }
         }
 
@@ -521,9 +544,9 @@ var parseItem = function parseItem(node, model) {
       }
 
       if (key.endsWith(" [AS ARRAY]")) {
-        var _newKey2 = key.slice(0, -' [AS ARRAY]'.length);
+        var _newKey3 = key.slice(0, -' [AS ARRAY]'.length);
 
-        var obj = parseItem(node[key], model, getShadowPath(shadowPath, _newKey2), shadowIndex);
+        var obj = parseItem(node[key], model, getShadowPath(shadowPath, _newKey3), shadowIndex);
         var arr = [];
 
         for (var _i10 = 0, _Object$entries6 = Object.entries(obj); _i10 < _Object$entries6.length; _i10++) {
@@ -534,14 +557,14 @@ var parseItem = function parseItem(node, model) {
           if ((_cond.startsWith('[...IF ') || _cond === '[...]') && Array.isArray(v)) arr = [].concat((0, _toConsumableArray2.default)(arr), (0, _toConsumableArray2.default)(v));else arr.push(v);
         }
 
-        newNode[_newKey2] = arr;
+        newNode[_newKey3] = arr;
         continue;
       }
 
       if (key.endsWith(' [FROM]')) {
-        var _newKey3 = key.slice(0, -' [FROM]'.length).trim();
+        var _newKey4 = key.slice(0, -' [FROM]'.length).trim();
 
-        newNode[_newKey3] = node[key] === '@' ? model : model[node[key]];
+        newNode[_newKey4] = node[key] === '@' ? model : model[node[key]];
         continue;
       }
 
@@ -570,10 +593,10 @@ var parseItem = function parseItem(node, model) {
       }
 
       if (key.endsWith(' [!]')) {
-        var _newKey4 = key.slice(0, -' [!]'.length).trim();
+        var _newKey5 = key.slice(0, -' [!]'.length).trim();
 
-        var itemShadowPath = getShadowPath(shadowPath, _newKey4);
-        newNode[_newKey4] = parseItem(node[key], model, itemShadowPath, shadowIndex);
+        var itemShadowPath = getShadowPath(shadowPath, _newKey5);
+        newNode[_newKey5] = parseItem(node[key], model, itemShadowPath, shadowIndex);
         shadowIndex[itemShadowPath] = {
           important: true
         };
@@ -621,10 +644,10 @@ function () {
           var key = _step4.value;
 
           if (['IF', '...IF'].includes(key.operator)) {
-            var _getStringOrRx3 = getStringOrRx(key.condition),
-                _getStringOrRx4 = (0, _slicedToArray2.default)(_getStringOrRx3, 2),
-                condition = _getStringOrRx4[0],
-                strings = _getStringOrRx4[1];
+            var _getStringOrRx5 = getStringOrRx(key.condition),
+                _getStringOrRx6 = (0, _slicedToArray2.default)(_getStringOrRx5, 2),
+                condition = _getStringOrRx6[0],
+                strings = _getStringOrRx6[1];
 
             condition = condition.split(/ \| | & /);
             var _iteratorNormalCompletion5 = true;
@@ -662,10 +685,10 @@ function () {
               }
             }
           } else if (['BY', '*BY', '...BY'].includes(key.operator)) {
-            var _getStringOrRx5 = getStringOrRx(key.condition),
-                _getStringOrRx6 = (0, _slicedToArray2.default)(_getStringOrRx5, 2),
-                _condition = _getStringOrRx6[0],
-                _strings = _getStringOrRx6[1];
+            var _getStringOrRx7 = getStringOrRx(key.condition),
+                _getStringOrRx8 = (0, _slicedToArray2.default)(_getStringOrRx7, 2),
+                _condition = _getStringOrRx8[0],
+                _strings = _getStringOrRx8[1];
 
             var conditions = _condition.split(',').map(function (exp) {
               return exp.trim();

@@ -340,3 +340,17 @@ test('JSONCode: TEST Unsorted object', () => {
 		},
 	});
 });
+
+test('JSONCode: TEST [KEY-BY]', () => {
+	expect(resultTree['TEST [KEY-BY]']).toEqual({
+		item1: 'value 1',
+		'item [2|a]': 'value 2',
+		'item [3|b]': 'value 3',
+		'item [4|a]': 'value 4',
+		'item [5|b]': 'value 5',
+		item6a: 'value 6',
+		item7b: 'value 7',
+		item8a: 'value 8',
+		item9b: 'value 9',
+	});
+});

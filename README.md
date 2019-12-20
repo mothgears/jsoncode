@@ -76,7 +76,10 @@ const animalsFood = JSON.specify(petShop['Animals food'], {
  
 //Output
 const animalTypes = Object.keys(priceList);
-for (let animalType of animalTypes) console.log(animalType, priceList[animalType]);
+for (let animalType of animalTypes) console.log(
+    animalType, 
+    priceList[animalType]
+);
  
 console.log('Animals food', animalsFood);
 ```
@@ -185,7 +188,10 @@ const myJsonObject = {
     }, 
 };
 
-const result = jsoncode(myJsonObject, {mySelector: 'item 2', mySubSelector: 'subItem A'});
+const result = jsoncode(myJsonObject, {
+    mySelector: 'item 2', 
+    mySubSelector: 'subItem A'
+});
 console.log(result);
  
 //{"Selected value" : "some content 2 A"}
@@ -238,11 +244,23 @@ If condition is false, item will be removed from tree, else added into parent ob
 const myJsonObject = {
     "Its Object" : {
         "item1" : "some content 1", 
-        "item2" : { "subItem1": "some content 1", "subItem2": "some content 2" }, 
-        "item3" : { "subItem1": "some content 1", "subItem2": "some content 2" }, 
+        "item2" : { 
+            "subItem1": "some content 1", 
+            "subItem2": "some content 2" 
+        }, 
+        "item3" : { 
+            "subItem1": "some content 1", 
+            "subItem2": "some content 2" 
+        }, 
         "[...IF myVariable > 5]" : {
-            "item2"        : { "subItem2": "some content 2b", "subItem3": "some content 3b" }, 
-            "item3 [*...]" : { "subItem2": "some content 2b", "subItem3": "some content 3b" }, //Combine operator
+            "item2"        : { 
+                "subItem2": "some content 2b", 
+                "subItem3": "some content 3b" 
+            }, 
+            "item3 [*...]" : { 
+                "subItem2": "some content 2b", 
+                "subItem3": "some content 3b" 
+            }, //Combine operator
         }
     },
     "Its Array [AS ARRAY]" : {
@@ -271,7 +289,8 @@ console.log(result);
         }
     }
     "Its Array": [
-        "some content 0a", "some content 0b", "some content 1", "some content 2", 
+        "some content 0a", "some content 0b", 
+        "some content 1", "some content 2", 
         "some content 3", ["some content 6", "some content 7"]
     ],
 }
@@ -287,12 +306,24 @@ const myJsonObject = {
     "item3" : { "subItem1": "some content 1", "subItem2": "some content 2" }, 
     "[...BY myVariable]" : {
         "variantA" : {
-            "item2"        : { "subItem2": "some content 2b", "subItem3": "some content 3b" }, 
-            "item3 [*...]" : { "subItem2": "some content 2b", "subItem3": "some content 3b" },
+            "item2"        : { 
+                "subItem2": "some content 2b", 
+                "subItem3": "some content 3b" 
+            }, 
+            "item3 [*...]" : { 
+                "subItem2": "some content 2b", 
+                "subItem3": "some content 3b" 
+            },
         },
         "variantB" : {
-            "item2"        : { "subItem2": "some content 2c", "subItem3": "some content 3c" }, 
-            "item3 [*...]" : { "subItem2": "some content 2c", "subItem3": "some content 3c" },
+            "item2"        : { 
+                "subItem2": "some content 2c", 
+                "subItem3": "some content 3c" 
+            }, 
+            "item3 [*...]" : { 
+                "subItem2": "some content 2c",
+                 "subItem3": "some content 3c" 
+            },
         }
     }
 };
@@ -311,6 +342,26 @@ console.log(result);
         "subItem2": "some content 2b", 
         "subItem3": "some content 3b"
     }
+}
+*/
+```
+
+#### `[KEY-BY]`
+Selects keyname by condition
+```js
+const myJsonObject = {
+    "item1" : "some content 1", 
+    "[KEY-BY myVar = 'variantA'] item2a | item2b" : "some content 2", 
+    "[KEY-BY myVar = 'variantB'] 'item [3|A]' | 'item [3|B]'" : "some content 3", 
+};
+
+const result = jsoncode(myJsonObject, {myVar: 'variantA'});
+console.log(result);
+/*
+{
+    "item1"      : "some content 1",
+    "item2a"     : "some content 2",
+    "item [3|B]" : "some content 3",
 }
 */
 ```

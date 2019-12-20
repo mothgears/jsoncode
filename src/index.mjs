@@ -157,7 +157,20 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 	const keys = Object.keys(node);
 	const deferredParsers = [];
 	for (let key of keys) {
-		if (key.endsWith(']')) {
+		if (key.startsWith('[KEY-BY')) {
+			let [condition, ...keyVariants] = key.slice('[KEY-BY'.length).split(']');
+			let strAndRx;
+			[keyVariants, strAndRx] = getStringOrRx(keyVariants.join(']'));
+			keyVariants = keyVariants.split('|');
+
+			const isTrue = parseLogicalExp(condition, model);
+			let newKey = keyVariants[+!isTrue].trim();
+			if (newKey.startsWith(`'`)) newKey = strAndRx[newKey];
+
+			newNode[newKey] = parseItem(node[key], model, getShadowPath(shadowPath, newKey), shadowIndex);
+			continue;
+
+		} else if (key.endsWith(']')) {
 			const pureIF = key.startsWith('[IF ');
 			const spreadIF = key.startsWith('[...IF ');
 			if (key.includes(' [IF ') || pureIF || spreadIF) {
@@ -298,6 +311,7 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 				shadowIndex[itemShadowPath] = { important: true };
 				continue;
 			}
+
 		}
 
 		const escapedKey = escape(key);
