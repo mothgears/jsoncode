@@ -380,7 +380,7 @@ class Jsoncode {
 		const result = new Set;
 
 		for (let key of keys) {
-			if (['IF', '...IF'].includes(key.operator)) {
+			if (['KEY-BY', 'IF', '...IF'].includes(key.operator)) {
 				let [condition, strings] = getStringOrRx(key.condition);
 				condition = condition.split(/ \| | & /);
 				for (let exp of condition) {
@@ -434,12 +434,12 @@ class Jsoncode {
 	}
 
 	getParams () {
-		return this._getAll(new RegExp(`.*\\[(IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]+)]`))
+		return this._getAll(new RegExp(`.*\\[(KEY-BY|IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]+)].*`))
 	}
 
 	getValuesOf (propname) {
 		if (!propname || typeof propname !== 'string') throw Error('"getValuesOf" : propname is not string!');
-		return this._getAll(new RegExp(`.*\\[(IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]*${propname}[^\\]]*)]`), propname);
+		return this._getAll(new RegExp(`.*\\[(KEY-BY|IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]*${propname}[^\\]]*)].*`), propname);
 	}
 }
 

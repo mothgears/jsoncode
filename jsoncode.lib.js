@@ -643,7 +643,7 @@ function () {
         for (var _iterator4 = keys[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
           var key = _step4.value;
 
-          if (['IF', '...IF'].includes(key.operator)) {
+          if (['KEY-BY', 'IF', '...IF'].includes(key.operator)) {
             var _getStringOrRx5 = getStringOrRx(key.condition),
                 _getStringOrRx6 = (0, _slicedToArray2.default)(_getStringOrRx5, 2),
                 condition = _getStringOrRx6[0],
@@ -749,13 +749,13 @@ function () {
   }, {
     key: "getParams",
     value: function getParams() {
-      return this._getAll(new RegExp(".*\\[(IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]+)]"));
+      return this._getAll(new RegExp(".*\\[(KEY-BY|IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]+)].*"));
     }
   }, {
     key: "getValuesOf",
     value: function getValuesOf(propname) {
       if (!propname || typeof propname !== 'string') throw Error('"getValuesOf" : propname is not string!');
-      return this._getAll(new RegExp(".*\\[(IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]*".concat(propname, "[^\\]]*)]")), propname);
+      return this._getAll(new RegExp(".*\\[(KEY-BY|IF|BY|\\*BY|\\.\\.\\.IF|\\.\\.\\.BY) ([^\\]]*".concat(propname, "[^\\]]*)].*")), propname);
     }
   }, {
     key: "source",

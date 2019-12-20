@@ -403,6 +403,10 @@
   },
 
   "TEST selector" : {
+    "[KEY-BY 'valStrK1.1' E propK1] 'itemK1a' | 'itemK1b'" : {
+      "[KEY-BY propK2] 'itemK2a' | 'itemK2b'" : "value 1",
+      "[KEY-BY 'valStrK1.2' = propK1] itemK3a | itemK3b" : "value 2"
+    },
     "item0" : {
       "item0_1" : "value 0",
       "item0_2" : null

@@ -266,7 +266,7 @@ test('JSONCode: TEST !E', () => {
 test('JSONCode: TEST paramsSelector', () => {
 	expect(jcTree.getParams().sort()).toEqual([
 		'prop0','prop1','prop10','prop10_1','prop11','prop12',
-		'prop2','prop3','prop4','prop5','prop6','prop7','prop8','prop9'
+		'prop2','prop3','prop4','prop5','prop6','prop7','prop8','prop9','propK1','propK2'
 	]);
 });
 
@@ -283,6 +283,8 @@ test('JSONCode: TEST valuesSelector', () => {
 	expect(jcTree.getValuesOf('prop10')).toEqual([true, false]);
 	expect(jcTree.getValuesOf('prop11')).toEqual([true, false]);
 	expect(jcTree.getValuesOf('prop12')).toEqual([true, false]);
+	expect(jcTree.getValuesOf('propK1')).toEqual(['valStrK1.1', 'valStrK1.2']);
+	expect(jcTree.getValuesOf('propK2')).toEqual([true, false]);
 });
 
 test('JSONCode: TEST [FROM]', () => {
