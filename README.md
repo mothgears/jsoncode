@@ -127,7 +127,7 @@ console.log(result);
 ```
 
 #### Switch operator `[BY ]`
-This operator selects value of node by string.
+This operator selects value of node by string, regEx or array.
 ```js
 const myJsonObject = {
     "Selected value [BY mySelector]" : {

@@ -602,5 +602,19 @@
     "[KEY-BY boolFalse] item7a | item7b": "value 7",
     "[KEY-BY stringAlpha = 'alpha'] item8a | item8b": "value 8",
     "[KEY-BY stringAlpha = 'beta' ] item9a | item9b": "value 9"
+  },
+
+  "TEST BY Array": {
+    "item1 [BY arrayBetaGamma]": {
+      "alpha": "value 1a",
+      "gamma": "value 1b",
+      "beta" : "value 1c"
+    },
+
+    "item2 [BY arrayBetaGamma]": {
+      "alpha"   : "value 2a",
+      "omega"   : "value 2b",
+      "#DEFAULT": "value 2c"
+    }
   }
 }

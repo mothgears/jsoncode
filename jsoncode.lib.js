@@ -431,113 +431,96 @@ var parseItem = function parseItem(node, model) {
         caseline = caseline.split(', ');
         var selectedCase = node[key];
         var selectedCases = [];
+        if (arrayBY || spreadBY) caseline.length = 1;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
 
-        if (arrayBY) {
-          var casevalue = parseLogicalExp(caseline[0].trim(), model);
+        try {
+          for (var _iterator2 = caseline[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var casename = _step2.value;
+            if (!selectedCase) break;
+            var casevalue = parseLogicalExp(casename.trim(), model);
 
-          if (casevalue instanceof RegExp) {
-            for (var _i6 = 0, _Object$entries2 = Object.entries(selectedCase); _i6 < _Object$entries2.length; _i6++) {
-              var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i6], 2),
-                  caseKey = _Object$entries2$_i[0],
-                  value = _Object$entries2$_i[1];
-
-              if (casevalue.test(caseKey)) selectedCases.push(value);
+            if (typeof casevalue === 'boolean' || casevalue === null || casevalue === undefined) {
+              casevalue = casevalue ? '#TRUE' : '#FALSE';
             }
-          } else if (Array.isArray(casevalue)) {
-            for (var _i7 = 0, _Object$entries3 = Object.entries(selectedCase); _i7 < _Object$entries3.length; _i7++) {
-              var _Object$entries3$_i = (0, _slicedToArray2.default)(_Object$entries3[_i7], 2),
-                  _caseKey = _Object$entries3$_i[0],
-                  _value = _Object$entries3$_i[1];
 
-              if (casevalue.includes(_caseKey)) selectedCases.push(_value);
+            if (casevalue instanceof RegExp) {
+              for (var _i6 = 0, _Object$entries2 = Object.entries(selectedCase); _i6 < _Object$entries2.length; _i6++) {
+                var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i6], 2),
+                    caseKey = _Object$entries2$_i[0],
+                    value = _Object$entries2$_i[1];
+
+                if (casevalue.test(caseKey)) selectedCases.push(value);
+              }
+            } else if (Array.isArray(casevalue)) {
+              for (var _i7 = 0, _Object$entries3 = Object.entries(selectedCase); _i7 < _Object$entries3.length; _i7++) {
+                var _Object$entries3$_i = (0, _slicedToArray2.default)(_Object$entries3[_i7], 2),
+                    _caseKey = _Object$entries3$_i[0],
+                    _value = _Object$entries3$_i[1];
+
+                if (casevalue.includes(_caseKey)) selectedCases.push(_value);
+              }
+            } else {
+              if (Object.keys(selectedCase).includes(casevalue)) {
+                selectedCases.push(selectedCase[casevalue]);
+              }
+            }
+
+            if (!arrayBY && !spreadBY) {
+              if (selectedCases.length > 0) selectedCase = selectedCases[0];else selectedCase = selectedCase['#DEFAULT'];
+              selectedCases.length = 0;
             }
           }
-        } else {
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
-
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
           try {
-            for (var _iterator2 = caseline[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var casename = _step2.value;
-
-              var _casevalue = parseLogicalExp(casename.trim(), model);
-
-              if (spreadBY && caseline.length === 1) {
-                if (_casevalue instanceof RegExp) {
-                  for (var _i8 = 0, _Object$entries4 = Object.entries(selectedCase); _i8 < _Object$entries4.length; _i8++) {
-                    var _Object$entries4$_i = (0, _slicedToArray2.default)(_Object$entries4[_i8], 2),
-                        _caseKey2 = _Object$entries4$_i[0],
-                        _value2 = _Object$entries4$_i[1];
-
-                    if (_casevalue.test(_caseKey2)) selectedCases.push(_value2);
-                  }
-                } else if (Array.isArray(_casevalue)) {
-                  for (var _i9 = 0, _Object$entries5 = Object.entries(selectedCase); _i9 < _Object$entries5.length; _i9++) {
-                    var _Object$entries5$_i = (0, _slicedToArray2.default)(_Object$entries5[_i9], 2),
-                        _caseKey3 = _Object$entries5$_i[0],
-                        _value3 = _Object$entries5$_i[1];
-
-                    if (_casevalue.includes(_caseKey3)) selectedCases.push(_value3);
-                  }
-                }
-              }
-
-              if (typeof _casevalue === 'boolean' || _casevalue === null || _casevalue === undefined) {
-                _casevalue = _casevalue ? '#TRUE' : '#FALSE';
-              }
-
-              if (selectedCase) selectedCase = Object.keys(selectedCase).includes(_casevalue) ? selectedCase[_casevalue] : selectedCase['#DEFAULT'];
+            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+              _iterator2.return();
             }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
           } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-                _iterator2.return();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
+            if (_didIteratorError2) {
+              throw _iteratorError2;
             }
           }
         }
 
-        if (spreadBY && selectedCases.length > 0) {
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
+        if (selectedCases.length > 0) {
+          if (spreadBY) {
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
 
-          try {
-            for (var _iterator3 = selectedCases[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var sc = _step3.value;
-              var parsedItem = parseItem(sc, model, getShadowPath(shadowPath, _newKey2), shadowIndex);
-              if (spreadBY) spread(parsedItem, newNode, shadowPath, shadowIndex);else newNode[_newKey2] = parsedItem;
-            }
-          } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
-          } finally {
             try {
-              if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-                _iterator3.return();
+              for (var _iterator3 = selectedCases[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                var sc = _step3.value;
+                var parsedItem = parseItem(sc, model, getShadowPath(shadowPath, _newKey2), shadowIndex);
+                spread(parsedItem, newNode, shadowPath, shadowIndex);
               }
+            } catch (err) {
+              _didIteratorError3 = true;
+              _iteratorError3 = err;
             } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
+              try {
+                if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+                  _iterator3.return();
+                }
+              } finally {
+                if (_didIteratorError3) {
+                  throw _iteratorError3;
+                }
               }
             }
-          }
-        } else {
-          if (arrayBY && selectedCases.length > 0) selectedCase = selectedCases;
+          } else if (arrayBY) selectedCase = selectedCases;
+        }
 
-          if (selectedCase !== undefined) {
-            var _parsedItem = parseItem(selectedCase, model, getShadowPath(shadowPath, _newKey2), shadowIndex);
+        if ((!spreadBY || selectedCases.length === 0) && selectedCase !== undefined) {
+          var _parsedItem = parseItem(selectedCase, model, getShadowPath(shadowPath, _newKey2), shadowIndex);
 
-            if (spreadBY) spread(_parsedItem, newNode, shadowPath, shadowIndex);else newNode[_newKey2] = _parsedItem;
-          }
+          if (spreadBY) spread(_parsedItem, newNode, shadowPath, shadowIndex);else newNode[_newKey2] = _parsedItem;
         }
 
         continue;
@@ -549,10 +532,10 @@ var parseItem = function parseItem(node, model) {
         var obj = parseItem(node[key], model, getShadowPath(shadowPath, _newKey3), shadowIndex);
         var arr = [];
 
-        for (var _i10 = 0, _Object$entries6 = Object.entries(obj); _i10 < _Object$entries6.length; _i10++) {
-          var _Object$entries6$_i = (0, _slicedToArray2.default)(_Object$entries6[_i10], 2),
-              _cond = _Object$entries6$_i[0],
-              v = _Object$entries6$_i[1];
+        for (var _i8 = 0, _Object$entries4 = Object.entries(obj); _i8 < _Object$entries4.length; _i8++) {
+          var _Object$entries4$_i = (0, _slicedToArray2.default)(_Object$entries4[_i8], 2),
+              _cond = _Object$entries4$_i[0],
+              v = _Object$entries4$_i[1];
 
           if ((_cond.startsWith('[...IF ') || _cond === '[...]') && Array.isArray(v)) arr = [].concat((0, _toConsumableArray2.default)(arr), (0, _toConsumableArray2.default)(v));else arr.push(v);
         }
@@ -574,10 +557,10 @@ var parseItem = function parseItem(node, model) {
 
           if ((0, _typeof2.default)(obj) === 'object' && !Array.isArray(obj)) {
             deferredParsers.push(function () {
-              for (var _i11 = 0, _Object$entries7 = Object.entries(obj); _i11 < _Object$entries7.length; _i11++) {
-                var _Object$entries7$_i = (0, _slicedToArray2.default)(_Object$entries7[_i11], 2),
-                    k = _Object$entries7$_i[0],
-                    _v = _Object$entries7$_i[1];
+              for (var _i9 = 0, _Object$entries5 = Object.entries(obj); _i9 < _Object$entries5.length; _i9++) {
+                var _Object$entries5$_i = (0, _slicedToArray2.default)(_Object$entries5[_i9], 2),
+                    k = _Object$entries5$_i[0],
+                    _v = _Object$entries5$_i[1];
 
                 var itemShadowPath = getShadowPath(shadowPath, k);
                 var shadowItem = shadowIndex[itemShadowPath];
@@ -793,10 +776,10 @@ function () {
           }
         }
       } else {
-        for (var _i12 = 0, _Object$entries8 = Object.entries(node); _i12 < _Object$entries8.length; _i12++) {
-          var _Object$entries8$_i = (0, _slicedToArray2.default)(_Object$entries8[_i12], 2),
-              key = _Object$entries8$_i[0],
-              _value4 = _Object$entries8$_i[1];
+        for (var _i10 = 0, _Object$entries6 = Object.entries(node); _i10 < _Object$entries6.length; _i10++) {
+          var _Object$entries6$_i = (0, _slicedToArray2.default)(_Object$entries6[_i10], 2),
+              key = _Object$entries6$_i[0],
+              _value2 = _Object$entries6$_i[1];
 
           var result = key.match(rx);
 
@@ -804,11 +787,11 @@ function () {
             keys.push({
               operator: result[1],
               condition: result[2].trim(),
-              value: _value4
+              value: _value2
             });
           }
 
-          if (_value4 && (0, _typeof2.default)(_value4) === 'object') Jsoncode._selectKeysOfNode(rx, _value4, keys);
+          if (_value2 && (0, _typeof2.default)(_value2) === 'object') Jsoncode._selectKeysOfNode(rx, _value2, keys);
         }
       }
 

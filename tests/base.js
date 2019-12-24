@@ -356,3 +356,10 @@ test('JSONCode: TEST [KEY-BY]', () => {
 		item9b: 'value 9',
 	});
 });
+
+test('JSONCode: BY Array', () => {
+	expect(resultTree['TEST BY Array']).toEqual({
+		item1: 'value 1b',
+		item2: 'value 2c',
+	});
+});

@@ -223,50 +223,47 @@ const parseItem = (node, model, shadowPath = '', shadowIndex = {}) => {
 				let selectedCase = node[key];
 				const selectedCases = [];
 
-				if (arrayBY) {
-					let casevalue = parseLogicalExp(caseline[0].trim(), model);
+				if (arrayBY || spreadBY) caseline.length = 1;
+
+				for (let casename of caseline) {
+					if (!selectedCase) break;
+
+					let casevalue = parseLogicalExp(casename.trim(), model);
+					if (typeof casevalue === 'boolean' || casevalue === null || casevalue === undefined) {
+						casevalue = casevalue ? '#TRUE' : '#FALSE';
+					}
+
 					if (casevalue instanceof RegExp) {
-						for (let [caseKey,value] of Object.entries(selectedCase)) {
+						for (let [caseKey, value] of Object.entries(selectedCase)) {
 							if (casevalue.test(caseKey)) selectedCases.push(value);
 						}
 					} else if (Array.isArray(casevalue)) {
 						for (let [caseKey, value] of Object.entries(selectedCase)) {
 							if (casevalue.includes(caseKey)) selectedCases.push(value);
 						}
-					}
-				} else for (let casename of caseline) {
-					let casevalue = parseLogicalExp(casename.trim(), model);
-					if (spreadBY && caseline.length === 1) {
-						if (casevalue instanceof RegExp) {
-							for (let [caseKey, value] of Object.entries(selectedCase)) {
-								if (casevalue.test(caseKey)) selectedCases.push(value);
-							}
-						} else if (Array.isArray(casevalue)) {
-							for (let [caseKey, value] of Object.entries(selectedCase)) {
-								if (casevalue.includes(caseKey)) selectedCases.push(value);
-							}
+					} else {
+						if (Object.keys(selectedCase).includes(casevalue)) {
+							selectedCases.push(selectedCase[casevalue]);
 						}
 					}
-					if (typeof casevalue === 'boolean' || casevalue === null || casevalue === undefined) {
-						casevalue = casevalue ? '#TRUE' : '#FALSE';
+
+					if (!arrayBY && !spreadBY) {
+						if (selectedCases.length > 0) selectedCase = selectedCases[0];
+						else selectedCase = selectedCase['#DEFAULT'];
+						selectedCases.length = 0;
 					}
-					if (selectedCase) selectedCase = Object.keys(selectedCase).includes(casevalue)
-						? selectedCase[casevalue]
-						: selectedCase['#DEFAULT'];
 				}
 
-				if (spreadBY && selectedCases.length > 0) for (let sc of selectedCases) {
-					const parsedItem = parseItem(sc, model, getShadowPath(shadowPath, newKey), shadowIndex);
+				if (selectedCases.length > 0) {
+					if (spreadBY) for (let sc of selectedCases) {
+						const parsedItem = parseItem(sc, model, getShadowPath(shadowPath, newKey), shadowIndex);
+						spread(parsedItem, newNode, shadowPath, shadowIndex);
+					} else if (arrayBY) selectedCase = selectedCases;
+				}
+				if ((!spreadBY || selectedCases.length === 0) && selectedCase !== undefined) {
+					const parsedItem = parseItem(selectedCase, model, getShadowPath(shadowPath, newKey), shadowIndex);
 					if (spreadBY) spread(parsedItem, newNode, shadowPath, shadowIndex);
 					else newNode[newKey] = parsedItem;
-				}
-				else {
-					if (arrayBY && selectedCases.length > 0) selectedCase = selectedCases;
-					if (selectedCase !== undefined) {
-						const parsedItem = parseItem(selectedCase, model, getShadowPath(shadowPath, newKey), shadowIndex);
-						if (spreadBY) spread(parsedItem, newNode, shadowPath, shadowIndex);
-						else newNode[newKey] = parsedItem;
-					}
 				}
 
 				continue;
