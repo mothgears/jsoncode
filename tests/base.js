@@ -190,6 +190,9 @@ test('JSONCode: TEST Spread', () => {
 				localSimpleItemReplaced: "localSimpleItemReplaced newValue",
 				localSimpleItem3: "localSimpleItem3 value"
 			},
+			objectItemCombinedToVoid: {
+				"localSimpleItem1": "localSimpleItem1 value"
+			},
 			arrayItemReplaced: [
 				"newLocalSimpleItem1",
 				"newLocalSimpleItem2"

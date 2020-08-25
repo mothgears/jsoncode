@@ -138,7 +138,10 @@ const spread = (parsedItem, newNode, shadowPath, shadowIndex) => {
 			} else for (let subKey of Object.keys(value)) {
 				const itemShadowPath = getShadowPath(shadowPath, realKey, subKey);
 				const shadowItem = shadowIndex[itemShadowPath];
-				if (!shadowItem || !shadowItem.important) newNode[realKey][subKey] = value[subKey];
+				if (!shadowItem || !shadowItem.important) {
+					if (!newNode[realKey]) newNode[realKey] = {};
+					newNode[realKey][subKey] = value[subKey];
+				}
 			}
 		} else {
 			const itemShadowPath = getShadowPath(shadowPath, key);

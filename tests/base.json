@@ -287,6 +287,9 @@
           "localSimpleItemReplaced": "localSimpleItemReplaced newValue",
           "localSimpleItem3": "localSimpleItem3 value"
         },
+        "objectItemCombinedToVoid [*...]": {
+          "localSimpleItem1": "localSimpleItem1 value"
+        },
         "arrayItemReplaced": [
           "newLocalSimpleItem1",
           "newLocalSimpleItem2"
@@ -309,6 +312,9 @@
         "objectItemCombined [*...]": {
           "localSimpleItemReplaced": "localSimpleItemReplaced newValueF",
           "localSimpleItem3": "localSimpleItem3 valueF"
+        },
+        "objectItemCombinedToVoid [*...]": {
+          "localSimpleItem1": "localSimpleItem1 valueF"
         },
         "arrayItemReplaced": [
           "newLocalSimpleItem1F",
