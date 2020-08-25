@@ -325,7 +325,11 @@ var spread = function spread(parsedItem, newNode, shadowPath, shadowIndex) {
           var subKey = _Object$keys[_i3];
           var itemShadowPath = getShadowPath(shadowPath, realKey, subKey);
           var shadowItem = shadowIndex[itemShadowPath];
-          if (!shadowItem || !shadowItem.important) newNode[realKey][subKey] = value[subKey];
+
+          if (!shadowItem || !shadowItem.important) {
+            if (!newNode[realKey]) newNode[realKey] = {};
+            newNode[realKey][subKey] = value[subKey];
+          }
         }
       }
     } else {
