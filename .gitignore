@@ -3,7 +3,7 @@ Desktop.ini
 .DS_Store*
 ehthumbs.db
 Icon?
-
+jsoncode.lib.js
 node_modules/
 .idea
 yarn-error.log

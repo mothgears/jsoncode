@@ -1,6 +1,6 @@
 {
   "name": "jsoncode",
-  "version": "1.11.1",
+  "version": "1.12.0",
   "description": "JSON with conditional statements",
   "author": "Artem Varshavin",
   "license": "MIT",
@@ -12,24 +12,23 @@
     "if",
     "spread"
   ],
-  "main": "jsoncode.lib.js",
+  "main": "jsoncode.lib",
   "scripts": {
-    "test": "cross-env NODE_ENV=development node --experimental-modules --experimental-json-modules node_modules/jest/bin/jest.js",
-    "build": "cross-env NODE_ENV=production babel src/index.mjs --out-file jsoncode.lib.js",
-    "build-test": "cross-env NODE_ENV=production jest"
+    "prepublishOnly": "babel jsoncode.lib.mjs --out-file jsoncode.lib.js",
+    "build": "babel jsoncode.lib.mjs --out-file jsoncode.lib.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/mothgears/jsoncode.git"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.7",
-    "@babel/core": "^7.7.7",
-    "@babel/plugin-transform-runtime": "^7.7.6",
-    "@babel/preset-env": "^7.7.7",
-    "babel-plugin-add-module-exports": "^1.0.2",
+    "@babel/cli": "^7.17.0",
+    "@babel/core": "^7.17.0",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
     "cross-env": "^6.0.3",
-    "jest": "^24.9.0",
+    "jest": "^27.5.0",
     "jest-esm-transformer": "^1.0.0"
   },
   "jest": {
@@ -46,7 +45,7 @@
     }
   },
   "dependencies": {
-    "@babel/runtime": "^7.7.7",
-    "core-js": "^3.6.0"
+    "@babel/runtime": "^7.17.0",
+    "core-js": "^3.21.0"
   }
 }

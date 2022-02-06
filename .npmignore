@@ -2,8 +2,5 @@
 .gitignore
 .npmignore
 /tests
-/lib
 yarn-error.log
 yarn.lock
-jsoncode.mjs
-jsoncode.min.js

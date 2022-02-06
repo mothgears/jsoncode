@@ -1,4 +1,4 @@
-const jsoncode = process.env.NODE_ENV === 'development' ? require('../src/index.mjs').default : require('../jsoncode.lib.js');
+import jsoncode from '../jsoncode.lib.mjs';
 
 const tests = require('./base.json');
 
