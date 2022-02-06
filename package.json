@@ -1,6 +1,6 @@
 {
   "name": "jsoncode",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "description": "JSON with conditional statements",
   "author": "Artem Varshavin",
   "license": "MIT",
@@ -12,7 +12,8 @@
     "if",
     "spread"
   ],
-  "main": "jsoncode.lib",
+  "browser": "jsoncode.lib.js",
+  "main": "jsoncode.lib.mjs",
   "scripts": {
     "prepublishOnly": "babel jsoncode.lib.mjs --out-file jsoncode.lib.js",
     "build": "babel jsoncode.lib.mjs --out-file jsoncode.lib.js",
