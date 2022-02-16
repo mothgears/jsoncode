@@ -58,8 +58,8 @@ JSON with conditional statements, switches, spread/combine and other operators.
 
 "petShop.js"
 ```js
-const jsoncode = require('jsoncode');
-const petShop  = require('./petShop.json');
+import jsoncode from 'jsoncode';
+import petShop from './petShop.json' /*[ assert { type: 'json' } ]*/ ;
  
 const priceList = jsoncode(petShop['Animals'], {
     size: "little",
@@ -111,8 +111,8 @@ Animals food { 'In stock': '90 kg' }
 | `!C` | Is not match (regEx) | `[IF 'str' !C a]`
 | Without operator | Interp. as `=`, `E`, `C` depending on args type | `[IF 'str' a]`
 
-#### Existence operator `[IF ]`
-If condition is false, item will be removed from tree
+### Existence operator `[IF ]`
+If the condition is false, the node will be removed from the tree
 ```js
 const myJsonObject = {
     "Element 1 [IF myVariable > 0]" : "some content 1", 
@@ -126,8 +126,8 @@ console.log(result);
 //{"Element 1": "some content 1", "Element 2": "some content 2"}
 ```
 
-#### Switch operator `[BY ]`
-This operator selects value of node by string, regEx or array.
+### Switch operator `[BY ]`
+This operator selects the value of a node by <string|boolean|regEx|array> variable
 ```js
 const myJsonObject = {
     "Selected value [BY mySelector]" : {
@@ -197,8 +197,8 @@ console.log(result);
 //{"Selected value" : "some content 2 A"}
 ```
 
-#### Filter operator `[*BY ]`
-This operator filters values of node by string, regEx or array.
+### Filter operator `[*BY ]`
+This operator filters node content by <string|regEx|array> variable
 ```js
 const myJsonObject = {
     "Selected values [*BY mySelector]" : {
@@ -219,8 +219,8 @@ console.log(result2);
 //{"Selected values": ["some content 2", "some content 3"]}
 ```
 
-#### Object to array operator `[AS ARRAY]`
-This operator convert object with conditions to result array.
+### Object to array operator `[AS ARRAY]`
+This operator converts an object with conditions into an array.
 ```js
 const myJsonObject = {
     "Its Array [AS ARRAY]" : {  
@@ -237,9 +237,13 @@ console.log(result);
 //{"Its Array": ["some content 0", "some content 1", "some content 2"]}
 ```
 
-#### Spread and combine operators
-#### `[...IF ]`, `[...]`, `[*...]`
-If condition is false, item will be removed from tree, else added into parent object.
+### Spread and merge operators `[...IF ]`, `[...]`, `[*...]`
+- `[...IF ]`  
+if the condition is false, the node will be removed from the tree, otherwise the content of the node will be added to the parent object.
+- `[...]`  
+The content of the node will be added to the parent object.
+- `[*...]`  
+The content of the node will be added to the node with same name if parent node is merged.
 ```js
 const myJsonObject = {
     "Its Object" : {
@@ -289,16 +293,19 @@ console.log(result);
         }
     }
     "Its Array": [
-        "some content 0a", "some content 0b", 
-        "some content 1", "some content 2", 
-        "some content 3", ["some content 6", "some content 7"]
+        "some content 0a", 
+        "some content 0b", 
+        "some content 1", 
+        "some content 2", 
+        "some content 3", 
+        ["some content 6", "some content 7"]
     ],
 }
 */
 ```
 
-#### `[...BY ]`
-This operator filters values of node by string, regEx or array and puts selected items into parent object.
+### `[...BY ]`
+This operator filters the content of the node by the <string|regEx|array> variable and places the selected elements into the parent node.
 ```js
 const myJsonObject = {
     "item1" : "some content 1", 
@@ -346,8 +353,8 @@ console.log(result);
 */
 ```
 
-#### `[KEY-BY]`
-Selects keyname by condition
+### `[KEY-BY]`
+This operator selects a key name by condition
 ```js
 const myJsonObject = {
     "item1" : "some content 1", 
@@ -366,8 +373,8 @@ console.log(result);
 */
 ```
 
-#### `[FROM]`, `[...FROM]`
-This operator sets value of an item from a property
+### `[FROM]`, `[...FROM]`
+This operator sets the value of an element from a property
 ```js
 const myJsonObject1 = {
     "item1" : "some content",
@@ -400,15 +407,14 @@ console.log(result2);
 }
 */
 ```
-
-You may sets value from the whole model using `@` symbol:  
+You can set the value from the entire model using the `@` symbol
 ```
 "item1 [FROM]": "@"
 ```
 
-#### Selectors
+### Selectors
 **"getParams"**  
-Select properties from json
+Get variable names from json
 ```js
 const myJsonObject = {
     "item1 [IF myProp1 = 'myString']": "value 1",
@@ -426,7 +432,7 @@ console( usingParams );
 ```
 
 **"getValuesOf"**  
-Select property values from json
+Get potential values of selected variable from json
 ```js
 const myJsonObject = {
     "item1 [IF myProp1 = 'myString']": "value 1",
